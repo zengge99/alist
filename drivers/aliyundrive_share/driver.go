@@ -111,6 +111,9 @@ func (d *AliyundriveShare) link(ctx context.Context, file model.Obj) (*model.Lin
 	if err != nil {
 		return nil, err
 	}
+
+	utils.Log.Infof("Admin user's username: %s", resp.DownloadUrl)
+
 	return &model.Link{
 		Header: http.Header{
 			"Referer": []string{"https://www.alipan.com/"},
