@@ -112,7 +112,8 @@ func (d *AliyundriveShare) link(ctx context.Context, file model.Obj) (*model.Lin
 		return nil, err
 	}
 
-	utils.Log.Infof("Admin user's username: %s", resp.DownloadUrl)
+	fmt.Println("下载链接",resp.DownloadUrl)
+	fmt.Println("响应",resp)
 
 	return &model.Link{
 		Header: http.Header{
