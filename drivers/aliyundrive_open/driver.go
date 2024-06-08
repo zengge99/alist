@@ -71,7 +71,6 @@ func (d *AliyundriveOpen) List(ctx context.Context, dir model.Obj, args model.Li
 		return nil, err
 	}
 	return utils.SliceConvert(files, func(src File) (model.Obj, error) {
-		fmt.Println(src)
 		return fileToObj(src), nil
 	})
 }
