@@ -187,6 +187,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 		d.FileID_Link[file_id] = DownloadUrl
 	}	
 
+	/*
 	link := &model.Link{
 		Header: http.Header{
 			"Referer": []string{"https://www.aliyundrive.com/"},
@@ -203,6 +204,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 		Obj: newfile,
 		Ctx: ctx,
 	}
+	*/
 	
 	return link, nil
 }
