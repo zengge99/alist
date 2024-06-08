@@ -117,6 +117,9 @@ func (d *AliyundriveShare) getFiles(fileId string) ([]File, error) {
 			SetHeader(CanaryHeaderKey, CanaryHeaderValue).
 			SetResult(&resp).SetError(&e).SetBody(data).
 			Post("https://api.alipan.com/adrive/v3/file/list")
+
+			fmt.Printf("阿里分享原始响应: %v\n", resp)
+
 		if err != nil {
 			return nil, err
 		}
