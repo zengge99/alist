@@ -295,7 +295,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 
 	d.FileID_Link_model[file_id] = link
 
-	d.client.Delete(fullHash)
+	d.client.Delete(fastInfo.FileID)
 	
 	return link, nil
 }
