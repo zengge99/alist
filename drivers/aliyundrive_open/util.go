@@ -168,6 +168,7 @@ func (d *AliyundriveOpen) getFiles(ctx context.Context, fileId string) ([]File, 
 		marker = resp.NextMarker
 		res = append(res, resp.Items...)
 	}
+	fmt.Printf("阿里open原始响应: %v\n", resp)
 	return res, nil
 }
 
