@@ -132,9 +132,12 @@ func (d *AliyundriveOpen) requestReturnErrResp(uri, method string, callback base
 
 func (d *AliyundriveOpen) list(ctx context.Context, data base.Json) (*Files, error) {
 	var resp Files
-	_, err := d.request("/adrive/v1.0/openFile/list", http.MethodPost, func(req *resty.Request) {
+	res, err := d.request("/adrive/v1.0/openFile/list", http.MethodPost, func(req *resty.Request) {
 		req.SetBody(data).SetResult(&resp)
 	})
+
+	fmt.Println("阿里open原始响应: ", res)
+
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +169,6 @@ func (d *AliyundriveOpen) getFiles(ctx context.Context, fileId string) ([]File, 
 			return nil, err
 		}
 		marker = resp.NextMarker
-		fmt.Printf("阿里open原始响应: %v\n", resp)
 		res = append(res, resp.Items...)
 	}
 	return res, nil
