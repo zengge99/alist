@@ -145,7 +145,8 @@ func (d *AliyundriveShare2Open) refreshTokenOpen() error {
 	}
 	url :=  "https://openapi.alipan.com/oauth/access_token"
 	// fmt.Println("获取AccessTokenOpen,RefreshTokenOpen:\n",d.RefreshTokenOpen,"\nAliOpenRefreshToken:",base.AliOpenRefreshToken)
-	d.OauthTokenURL = conf.Conf.Opentoken_auth_url
+	//zzzzzzzzzzzzzzzzzzzzzzz
+	//d.OauthTokenURL = conf.Conf.Opentoken_auth_url
 	if d.OauthTokenURL != "" && d.ClientID == "" {
 		url = d.OauthTokenURL
 	}
