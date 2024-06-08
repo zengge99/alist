@@ -210,7 +210,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	} 
 
 	time.Sleep(2 * 1000 * time.Millisecond)
-	DownloadUrl, ContentHash, _, err := d.GetmyLink(ctx, new_file_id, file_name)
+	DownloadUrl, ContentHash, fileSize, err := d.GetmyLink(ctx, new_file_id, file_name)
 	if err != nil {
 		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取转存后的直链失败！！！",err)
 	}
@@ -228,6 +228,8 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	//zzzzzzzzzzzzzzzzzzzz
 	newfile := &model.Object{
 		ID:       new_file_id,
+		Name:	file_name,
+		Size:	fileSize,
 		HashInfo: utils.NewHashInfo(utils.SHA1, ContentHash),
 	}
 	
@@ -236,7 +238,24 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 		Ctx: ctx,
 	}
 	
-	stream.NewSeekableStream(fs, link)
+	ss, _ := stream.NewSeekableStream(fs, link)
+
+	const PreHashSize int64 = 128 * utils.KB
+	hashSize := PreHashSize
+	if stream.GetSize() < PreHashSize {
+		hashSize = stream.GetSize()
+	}
+	reader, err := stream.RangeRead(http_range.Range{Start: 0, Length: hashSize})
+	if err != nil {
+		return err
+	}
+	preHash, err := utils.HashReader(utils.SHA1, reader)
+	if err != nil {
+		return err
+	}
+	preHash = strings.ToUpper(preHash)
+
+	d.rapidUpload(stream.GetSize(), stream.GetName(), "0", preHash, ContentHash, ss)
 	
 	return link, nil
 }
