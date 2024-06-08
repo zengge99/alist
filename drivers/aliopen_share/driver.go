@@ -274,7 +274,23 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 
 	fmt.Println("115秒传信息(阿里2115)：",ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash)
 
-	d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash, ss)
+	var fastInfo *driver115.UploadInitResp
+
+	if fastInfo, err = d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash, ss); err != nil {
+		return nil, err
+	}
+
+	var userAgent = args.Header.Get("User-Agent")
+	downloadInfo, err := d.DownloadWithUA(fastInfo.PickCode, userAgent)
+	if err != nil {
+		return nil, err
+	}
+	link = &model.Link{
+		URL:    downloadInfo.Url.Url,
+		Header: downloadInfo.Header,
+	}
+
+	fmt.Println("115下载链接：", downloadInfo.Url.Url)
 	
 	return link, nil
 }
