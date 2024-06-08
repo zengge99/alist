@@ -18,6 +18,11 @@ type Addition struct {
 	OauthTokenURL  string `json:"oauth_token_url" default:"https://api.nn.ci/alist/ali_open/token"`
 	ClientID       string `json:"client_id" required:"false" help:"Keep it empty if you don't have one"`
 	ClientSecret   string `json:"client_secret" required:"false" help:"Keep it empty if you don't have one"`
+	
+	//115参数
+	Cookie       string  `json:"cookie" type:"text" help:"115 cookie required"`
+	PageSize     int64   `json:"page_size" type:"number" default:"56" help:"list api per page size of 115 driver"`
+	LimitRate    float64 `json:"limit_rate" type:"number" default:"2" help:"limit all api request rate (1r/[limit_rate]s)"`
 }
 
 var config = driver.Config{
