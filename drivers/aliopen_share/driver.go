@@ -257,7 +257,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 
 	fullHash := ss.GetHash().GetHash(utils.SHA1)
 	if len(fullHash) <= 0 {
-		tmpF, err := stream.CacheFullInTempFile()
+		tmpF, err := ss.CacheFullInTempFile()
 		if err != nil {
 			return nil, err
 		}
