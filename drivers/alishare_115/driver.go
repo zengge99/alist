@@ -214,8 +214,10 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	if err == nil {
 		d.FileID_Link[file_id] = DownloadUrl
 	}	
-	d.Purge_temp_folder(ctx)
 
+	if d.PurgeAliTemp{
+		d.Purge_temp_folder(ctx)
+	}
 
 	link := &model.Link{
 		Header: http.Header{
