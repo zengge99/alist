@@ -7,6 +7,16 @@ import (
 	"fmt"
 	"encoding/json"
 	"github.com/tidwall/gjson"
+
+	"bytes"
+	"crypto/tls"
+	"encoding/json"
+	"io"
+	"net/url"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"sync"
 	
 	"github.com/alist-org/alist/v3/drivers/base"
     "github.com/alist-org/alist/v3/internal/conf"
@@ -26,6 +36,8 @@ import (
 	"github.com/alist-org/alist/v3/pkg/http_range"
 	//"golang.org/x/time/rate"
 )
+
+var UserAgent = driver115.UA115Desktop
 
 type AliyundriveShare2Open struct {
 	model.Storage
