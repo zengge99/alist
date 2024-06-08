@@ -268,6 +268,10 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	}
 	fullHash = strings.ToUpper(fullHash)
 
+	if ok, err := d.client.UploadAvailable(); err != nil || !ok {
+		return nil, err
+	}
+
 	fmt.Println("115秒传信息(阿里2115)：",ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash)
 
 	d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash, ss)
