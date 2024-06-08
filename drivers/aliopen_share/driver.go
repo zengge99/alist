@@ -167,7 +167,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 			Header: http.Header{
 				"Referer": []string{"https://www.aliyundrive.com/"},
 			},
-			URL: "http:/GetmyLink/img.xiaoya.pro/abnormal.png",
+			URL: "http://img.xiaoya.pro/abnormal.png",
 		}, nil
 	} 
 
