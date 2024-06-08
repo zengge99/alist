@@ -185,13 +185,17 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	if err == nil {
 		d.FileID_Link[file_id] = DownloadUrl
 	}	
-	
-	return &model.Link{
+
+	link := &model.Link{
 		Header: http.Header{
 			"Referer": []string{"https://www.aliyundrive.com/"},
 		},
 		URL: DownloadUrl,
-	}, nil
+	}
+
+	ctx := context.Context{}
+	
+	return link, nil
 }
 
 func (d *AliyundriveShare2Open) Copy2Myali(ctx context.Context, src_driveid string, file_id string, file_name string) (string, error) {
@@ -288,6 +292,9 @@ func (d *AliyundriveShare2Open) GetmyLink(ctx context.Context, file_id string, f
 					"expire_sec": 14300,
 			})
 		})
+
+		//zzzzzzzzzzzzzzzzzzzzz
+		fmt.Println("获取链接原始响应: ",string(res))
 		
         if err != nil {
             if count > 2 {
