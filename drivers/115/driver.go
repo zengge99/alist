@@ -47,6 +47,8 @@ func (d *Pan115) Drop(ctx context.Context) error {
 }
 
 func (d *Pan115) List(ctx context.Context, dir model.Obj, args model.ListArgs) ([]model.Obj, error) {
+	//zzzzzzzzzzzzzzzzz
+	fmt.Println("调用115 List")
 	if err := d.WaitLimit(ctx); err != nil {
 		return nil, err
 	}
@@ -60,6 +62,8 @@ func (d *Pan115) List(ctx context.Context, dir model.Obj, args model.ListArgs) (
 }
 
 func (d *Pan115) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
+	//zzzzzzzzzzzzzzzzz
+	fmt.Println("调用115 Link")
 	if err := d.WaitLimit(ctx); err != nil {
 		return nil, err
 	}
@@ -101,6 +105,8 @@ func (d *Pan115) Rename(ctx context.Context, srcObj model.Obj, newName string) e
 }
 
 func (d *Pan115) Copy(ctx context.Context, srcObj, dstDir model.Obj) error {
+	//zzzzzzzzzzzzzzzzz
+	fmt.Println("调用115 Copy")
 	if err := d.WaitLimit(ctx); err != nil {
 		return err
 	}
@@ -115,6 +121,8 @@ func (d *Pan115) Remove(ctx context.Context, obj model.Obj) error {
 }
 
 func (d *Pan115) Put(ctx context.Context, dstDir model.Obj, stream model.FileStreamer, up driver.UpdateProgress) error {
+	//zzzzzzzzzzzzzzzzz
+	fmt.Println("调用115 Put")
 	if err := d.WaitLimit(ctx); err != nil {
 		return err
 	}
