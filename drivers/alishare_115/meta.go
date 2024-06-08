@@ -18,10 +18,11 @@ type Addition struct {
 	OauthTokenURL  string `json:"oauth_token_url" default:"https://api.nn.ci/alist/ali_open/token"`
 	ClientID       string `json:"client_id" required:"false" help:"Keep it empty if you don't have one"`
 	ClientSecret   string `json:"client_secret" required:"false" help:"Keep it empty if you don't have one"`
-	
+	PurgeAliTemp    bool   `json:"purge_ali_temp" default:"false"`
+
 	//115参数
-	Cookie       string  `json:"cookie" type:"text" help:"115 cookie required"`
-	DirId       string  `json:"dir_id" type:"text" help:"115 temp dir id"`
+	Cookie       string  `json:"cookie" type:"text" required:"true" help:"115 cookie required"`
+	DirId       string  `json:"dir_id" type:"text" required:"true" help:"115 temp dir id"`
 }
 
 var config = driver.Config{
