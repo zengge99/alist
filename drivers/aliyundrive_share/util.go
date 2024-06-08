@@ -119,7 +119,7 @@ func (d *AliyundriveShare) getFiles(fileId string) ([]File, error) {
 			Post("https://api.alipan.com/adrive/v3/file/list")
 
 			//zzzzzzzzzzzzzzzzz
-			fmt.Println("阿里分享原始响应: ", string(res))
+			fmt.Println("阿里分享原始响应: ", string(res.String()))
 
 		if err != nil {
 			return nil, err
