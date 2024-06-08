@@ -292,7 +292,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 
 	fmt.Println("115下载链接：", downloadInfo.Url.Url)
 
-	d.FileID_Link_model[file_id] = link;
+	d.FileID_Link_model[file_id] = link
 	
 	return link, nil
 }
