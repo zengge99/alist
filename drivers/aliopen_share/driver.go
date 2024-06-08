@@ -167,7 +167,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 			Header: http.Header{
 				"Referer": []string{"https://www.aliyundrive.com/"},
 			},
-			URL: "http://img.xiaoya.pro/abnormal.png",
+			URL: "http:/GetmyLink/img.xiaoya.pro/abnormal.png",
 		}, nil
 	} 
 
@@ -221,6 +221,9 @@ func (d *AliyundriveShare2Open) Copy2Myali(ctx context.Context, src_driveid stri
 		return "", err
 	}
 	
+	//zzzzzzzzzzzzzzzzzzzzz
+	fmt.Println("转存原始响应: ",string(r))
+
 	var responses map[string]interface{}
 	json.Unmarshal([]byte(r), &responses)
 
