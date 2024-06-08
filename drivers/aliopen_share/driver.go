@@ -194,6 +194,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	file_name := file.GetName()
 
 	if link, ok := d.FileID_Link_model[file_id]; ok {
+		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"文件已转存: ",file_name,link.URL)
 		return link, nil;
 	}
 
