@@ -60,6 +60,7 @@ type AliyundriveShare2Open struct {
 	FileHash_dict map[string]string
 	FileSize_dict map[string]int64
 	FileID_Link		 map[string]string
+	FileID_Link_model		 map[string]*model.Link
 	client  *driver115.Pan115Client
 }
 
@@ -89,8 +90,10 @@ func (d *AliyundriveShare2Open) Init(ctx context.Context) error {
 	var fileid_link map[string]string
 	var filehash_map map[string]string
 	var filesize_map map[string]int64
+	var fileid_link_model map[string]*model.Link
     downloadurlmap = make(map[string]string)
 	fileid_link = make(map[string]string)
+	fileid_link_model = make(map[string]*model.Link)
 	siteMap = make(map[string]string)
 	filehash_map = make(map[string]string)
 	filesize_map = make(map[string]int64)
@@ -99,6 +102,7 @@ func (d *AliyundriveShare2Open) Init(ctx context.Context) error {
 	d.FileHash_dict = filehash_map
 	d.FileSize_dict = filesize_map
 	d.FileID_Link = fileid_link
+	d.FileID_Link_model = fileid_link_model
 
 	//res, err := d.request("https://api.aliyundrive.com/v2/user/get", http.MethodPost, nil)
 	res, err := d.requestOpen("/adrive/v1.0/user/getDriveInfo", http.MethodPost, func(req *resty.Request){})
@@ -143,6 +147,7 @@ func (d *AliyundriveShare2Open) Init(ctx context.Context) error {
 		fmt.Println(time.Now().Format("01-02-2006 15:04:05")," 清空缓存下载链接: ", d.MountPath) //d.ShareId) //d.MyAliDriveId)
 		d.DownloadUrl_dict = make(map[string]string)
 		d.FileID_Link = make(map[string]string)
+		d.fileid_link_model = make(map[string]*model.Link)
 		d.CopyFiles = make(map[string]string)
 		d.FileHash_dict = make(map[string]string)
 		d.FileSize_dict = make(map[string]int64)
@@ -187,6 +192,10 @@ func (d *AliyundriveShare2Open) List(ctx context.Context, dir model.Obj, args mo
 func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
 	file_id :=  file.GetID()
 	file_name := file.GetName()
+
+	if link, ok := d.FileID_Link_model[file_id]; ok {
+		return link;
+	}
 
 	new_file_id, err := d.Copy2Myali( ctx , d.MyAliDriveId, file_id, file_name)
 	if err != nil || new_file_id == "" {
@@ -282,6 +291,8 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	}
 
 	fmt.Println("115下载链接：", downloadInfo.Url.Url)
+
+	d.FileID_Link_model[file_id] = link;
 	
 	return link, nil
 }
