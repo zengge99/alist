@@ -188,34 +188,26 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	file_id :=  file.GetID()
 	file_name := file.GetName()
 
-	DownloadUrl, ok := d.FileID_Link[file_id]
-	var new_file_id string = ""
-	var ContentHash string = ""
-	var fileSize int64 = 0
-	var err error = nil
-	if !ok {
-		new_file_id, err = d.Copy2Myali( ctx , d.MyAliDriveId, file_id, file_name)
-		if err != nil || new_file_id == "" {
-			return &model.Link{
-				Header: http.Header{
-					"Referer": []string{"https://www.aliyundrive.com/"},
-				},
-				URL: "http:/GetmyLink/img.xiaoya.pro/abnormal.png",
-			}, nil
-		} 
-	
-		time.Sleep(2 * 1000 * time.Millisecond)
-		DownloadUrl, ContentHash, fileSize, err = d.GetmyLink(ctx, new_file_id, file_name)
-		if err != nil {
-			fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取转存后的直链失败！！！",err)
-		}
-		if err == nil {
-			d.FileID_Link[file_id] = DownloadUrl
-		}	
-		d.Purge_temp_folder(ctx)
-	} else {
-		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"文件已转存并且下载直链已缓存: ",file_name)
+	new_file_id, err := d.Copy2Myali( ctx , d.MyAliDriveId, file_id, file_name)
+	if err != nil || new_file_id == "" {
+		return &model.Link{
+			Header: http.Header{
+				"Referer": []string{"https://www.aliyundrive.com/"},
+			},
+			URL: "http:/GetmyLink/img.xiaoya.pro/abnormal.png",
+		}, nil
+	} 
+
+	time.Sleep(2 * 1000 * time.Millisecond)
+	DownloadUrl, ContentHash, fileSize, err := d.GetmyLink(ctx, new_file_id, file_name)
+	if err != nil {
+		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取转存后的直链失败！！！",err)
 	}
+	if err == nil {
+		d.FileID_Link[file_id] = DownloadUrl
+	}	
+	d.Purge_temp_folder(ctx)
+
 
 	link := &model.Link{
 		Header: http.Header{
