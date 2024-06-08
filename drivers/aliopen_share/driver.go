@@ -9,11 +9,11 @@ import (
 	"github.com/tidwall/gjson"
 	
 	"github.com/alist-org/alist/v3/drivers/base"
-    	//"github.com/alist-org/alist/v3/internal/conf"
+    //"github.com/alist-org/alist/v3/internal/conf"
 	"github.com/alist-org/alist/v3/internal/driver"
 	"github.com/alist-org/alist/v3/internal/errs"
 	"github.com/alist-org/alist/v3/internal/model"
-	"github.com/alist-org/alist/v3/internal/stream"
+	//"github.com/alist-org/alist/v3/internal/stream"
 	"github.com/alist-org/alist/v3/pkg/cron"
 	"github.com/alist-org/alist/v3/pkg/utils"
 	"github.com/go-resty/resty/v2"
@@ -187,7 +187,6 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 		d.FileID_Link[file_id] = DownloadUrl
 	}	
 
-	/*
 	link := &model.Link{
 		Header: http.Header{
 			"Referer": []string{"https://www.aliyundrive.com/"},
@@ -195,6 +194,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 		URL: DownloadUrl,
 	}
 
+	/*
 	newfile := &model.Object{
 		ID:       new_file_id,
 		HashInfo: utils.NewHashInfo(utils.SHA1, "12345"),
