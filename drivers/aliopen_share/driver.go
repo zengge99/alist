@@ -281,7 +281,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	}
 
 	var userAgent = args.Header.Get("User-Agent")
-	downloadInfo, err := d.DownloadWithUA(fastInfo.PickCode, userAgent)
+	downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
 	if err != nil {
 		return nil, err
 	}
