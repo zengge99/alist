@@ -242,20 +242,20 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 
 	const PreHashSize int64 = 128 * utils.KB
 	hashSize := PreHashSize
-	if stream.GetSize() < PreHashSize {
-		hashSize = stream.GetSize()
+	if ss.GetSize() < PreHashSize {
+		hashSize = ss.GetSize()
 	}
-	reader, err := stream.RangeRead(http_range.Range{Start: 0, Length: hashSize})
+	reader, err := ss.RangeRead(http_range.Range{Start: 0, Length: hashSize})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	preHash, err := utils.HashReader(utils.SHA1, reader)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	preHash = strings.ToUpper(preHash)
 
-	d.rapidUpload(stream.GetSize(), stream.GetName(), "0", preHash, ContentHash, ss)
+	d.rapidUpload(ss.GetSize(), ss.GetName(), "0", preHash, ContentHash, ss)
 	
 	return link, nil
 }
@@ -519,6 +519,10 @@ func (d *AliyundriveShare2Open) rapidUpload(fileSize int64, fileName, dirID, pre
 		if decrypted, err = ecdhCipher.Decrypt(bodyBytes); err != nil {
 			return nil, err
 		}
+
+		//zzzzzzzzzzzzzzzzz
+		fmt.Println("115转存响应：", decrypted)
+
 		if err = driver115.CheckErr(json.Unmarshal(decrypted, &result), &result, resp); err != nil {
 			return nil, err
 		}
