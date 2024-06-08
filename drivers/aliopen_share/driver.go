@@ -215,7 +215,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 		Ctx: ctx,
 	}
 	
-	_, _ := stream.NewSeekableStream(fs, link)
+	stream.NewSeekableStream(fs, link)
 	
 	return link, nil
 }
@@ -304,7 +304,7 @@ func (d *AliyundriveShare2Open) GetmyLink(ctx context.Context, file_id string, f
 	existed_file_size, _ := d.FileSize_dict[file_id];
 	if ok {
 		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"下载链接已存在: ",file_name)
-		return existed_download_url, existed_file_hash, d.FileSize_dict[file_id], nil
+		return existed_download_url, existed_file_hash, existed_file_size, nil
 	}
 
     count := 1
@@ -322,7 +322,7 @@ func (d *AliyundriveShare2Open) GetmyLink(ctx context.Context, file_id string, f
 		
         if err != nil {
             if count > 2 {
-                  return "http://img.xiaoya.pro/abnormal.png", err
+                  return "http://img.xiaoya.pro/abnormal.png", "", "", err
             }
 			fmt.Println("获取下载链接失败第",count,"次 ",file_name)
             count += 1
