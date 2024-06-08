@@ -63,6 +63,8 @@ func (d *AliyundriveOpen) Drop(ctx context.Context) error {
 }
 
 func (d *AliyundriveOpen) List(ctx context.Context, dir model.Obj, args model.ListArgs) ([]model.Obj, error) {
+	//zzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+	fmt.Println("调用open List")
 	if d.limitList == nil {
 		return nil, fmt.Errorf("driver not init")
 	}
