@@ -290,7 +290,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 
 	d.FileID_Link_model[file_id] = link
 
-	d.client.Delete(fastInfo.FileID)
+	//d.client.Delete(fastInfo.FileID)
 	
 	return link, nil
 }
