@@ -147,7 +147,7 @@ func (d *AliyundriveShare2Open) Init(ctx context.Context) error {
 		fmt.Println(time.Now().Format("01-02-2006 15:04:05")," 清空缓存下载链接: ", d.MountPath) //d.ShareId) //d.MyAliDriveId)
 		d.DownloadUrl_dict = make(map[string]string)
 		d.FileID_Link = make(map[string]string)
-		d.fileid_link_model = make(map[string]*model.Link)
+		d.FileID_Link_model = make(map[string]*model.Link)
 		d.CopyFiles = make(map[string]string)
 		d.FileHash_dict = make(map[string]string)
 		d.FileSize_dict = make(map[string]int64)
@@ -194,7 +194,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	file_name := file.GetName()
 
 	if link, ok := d.FileID_Link_model[file_id]; ok {
-		return link;
+		return link, nil;
 	}
 
 	new_file_id, err := d.Copy2Myali( ctx , d.MyAliDriveId, file_id, file_name)
