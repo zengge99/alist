@@ -12,5 +12,5 @@ type TokenResp struct {
 type ReqCallback func(req *resty.Request)
 
 //zzzzzzzzzzzzzzzzzzz
-AliOpenRefreshToken string = ""
-AliOpenAccessToken string = ""
+var AliOpenRefreshToken string = ""
+var AliOpenAccessToken string = ""
