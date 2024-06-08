@@ -193,15 +193,14 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 		URL: DownloadUrl,
 	}
 
-	ctx := context.Background()
-
-	file := model.Object{
+	newfile := model.Object{
 		ID:       new_file_id,
+		CreateTime:	nil,
 		HashInfo: utils.NewHashInfo(utils.SHA1, "12345"),
 	}
 	
 	fs := stream.FileStream{
-		Obj: file,
+		Obj: newfile,
 		Ctx: ctx,
 	}
 	
