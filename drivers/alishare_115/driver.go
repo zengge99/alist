@@ -192,7 +192,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	file_name := file.GetName()
 
 	if link, ok := d.FileID_Link_model[file_id]; ok {
-		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"文件已转存: ",file_name,link.URL)
+		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取115下载缓存链接：",file_name,link.URL)
 		return link, nil;
 	}
 
@@ -270,8 +270,6 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		return nil, err
 	}
 
-	fmt.Println("115秒传信息(阿里2115)：",ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash)
-
 	var fastInfo *driver115.UploadInitResp
 
 	if fastInfo, err = d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash, ss); err != nil {
@@ -288,9 +286,11 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		Header: downloadInfo.Header,
 	}
 
-	fmt.Println("115下载链接：", downloadInfo.Url.Url)
+	fmt.Println("获取115下载新链接：", downloadInfo.Url.Url)
 
 	d.FileID_Link_model[file_id] = link
+
+	d.client.Delete(fullHash)
 	
 	return link, nil
 }
