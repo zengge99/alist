@@ -56,7 +56,8 @@ func (d *AliyundriveShare2Open) Init(ctx context.Context) error {
 	if err2 != nil {
 		return err2
 	}
-    d.OauthTokenURL = conf.Conf.Opentoken_auth_url
+	// zzzzzzzzzzzzzzzzzzzzzzzzzzz
+    // d.OauthTokenURL = conf.Conf.Opentoken_auth_url
 	err = d.refreshTokenOpen()
 
 	var siteMap map[string]string
@@ -90,6 +91,8 @@ func (d *AliyundriveShare2Open) Init(ctx context.Context) error {
 		}
 	})
 
+	//zzzzzzzzzzzzzzzzzzzzzzzzzzz
+	/*
 	d.cron3 = cron.NewCron(time.Hour * time.Duration(conf.Conf.Auto_clean_interval))
 	d.cron3.Do(func() {
 		if conf.Conf.Autoremove == 1 {
@@ -102,6 +105,7 @@ func (d *AliyundriveShare2Open) Init(ctx context.Context) error {
 			}
 		}
 	})
+	*/
 
     d.cron2 = cron.NewCron(time.Minute * 13)
     d.cron2.Do(func() {
@@ -129,7 +133,9 @@ func (d *AliyundriveShare2Open) List(ctx context.Context, dir model.Obj, args mo
 	for {
 		files, err := d.getFiles(dir.GetID())
 		if err != nil {
-			if count > conf.Conf.Retry_count {
+			//zzzzzzzzzzzzzzzzzzzzzzz
+			//if count > conf.Conf.Retry_count {
+			if count > 4 {
 				fmt.Println("获取目录列表失败，结束重试",d.MountPath,": ",dir.GetName())
 				return nil, err
 			}
