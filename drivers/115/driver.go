@@ -170,6 +170,9 @@ func (d *Pan115) Put(ctx context.Context, dstDir model.Obj, stream model.FileStr
 	}
 	fullHash = strings.ToUpper(fullHash)
 
+	//zzzzzzzzzzzzzzzzzzzzzzzz
+	fmt.Println("115秒传信息：",stream.GetSize(), stream.GetName(), dirID, preHash, fullHash)
+
 	// rapid-upload
 	// note that 115 add timeout for rapid-upload,
 	// and "sig invalid" err is thrown even when the hash is correct after timeout.
