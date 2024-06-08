@@ -85,6 +85,7 @@ func (d *AliyundriveShare) list(ctx context.Context, dir model.Obj) ([]model.Obj
 		return nil, err
 	}
 	return utils.SliceConvert(files, func(src File) (model.Obj, error) {
+		fmt.Println(src)
 		return fileToObj(src), nil
 	})
 }
@@ -111,9 +112,6 @@ func (d *AliyundriveShare) link(ctx context.Context, file model.Obj) (*model.Lin
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("下载链接",resp.DownloadUrl)
-	fmt.Println("响应",resp)
 
 	return &model.Link{
 		Header: http.Header{
