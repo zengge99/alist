@@ -13,7 +13,7 @@ import (
 	"github.com/alist-org/alist/v3/internal/driver"
 	"github.com/alist-org/alist/v3/internal/errs"
 	"github.com/alist-org/alist/v3/internal/model"
-	//"github.com/alist-org/alist/v3/internal/stream"
+	"github.com/alist-org/alist/v3/internal/stream"
 	"github.com/alist-org/alist/v3/pkg/cron"
 	"github.com/alist-org/alist/v3/pkg/utils"
 	"github.com/go-resty/resty/v2"
@@ -37,6 +37,7 @@ type AliyundriveShare2Open struct {
 	AccessTokenOpen  string
 	CopyFiles        map[string]string
 	DownloadUrl_dict map[string]string
+	FileHash_dict map[string]string
 	FileID_Link		 map[string]string
 }
 
@@ -62,13 +63,16 @@ func (d *AliyundriveShare2Open) Init(ctx context.Context) error {
 	err = d.refreshTokenOpen()
 
 	var siteMap map[string]string
-    	var downloadurlmap map[string]string
+    var downloadurlmap map[string]string
 	var fileid_link map[string]string
-    	downloadurlmap = make(map[string]string)
+	var filehash_map map[string]string
+    downloadurlmap = make(map[string]string)
 	fileid_link = make(map[string]string)
 	siteMap = make(map[string]string)
+	filehash_map = make(map[string]string)
 	d.CopyFiles = siteMap
 	d.DownloadUrl_dict = downloadurlmap
+	d.FileHash_dict = filehash_map
 	d.FileID_Link = fileid_link
 
 	//res, err := d.request("https://api.aliyundrive.com/v2/user/get", http.MethodPost, nil)
@@ -115,6 +119,7 @@ func (d *AliyundriveShare2Open) Init(ctx context.Context) error {
 		d.DownloadUrl_dict = make(map[string]string)
 		d.FileID_Link = make(map[string]string)
 		d.CopyFiles = make(map[string]string)
+		d.FileHash_dict = make(map[string]string)
 	}
     })
 	
@@ -179,7 +184,7 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	} 
 
 	time.Sleep(2 * 1000 * time.Millisecond)
-	DownloadUrl, err := d.GetmyLink(ctx, new_file_id, file_name)
+	DownloadUrl, ContentHash, err := d.GetmyLink(ctx, new_file_id, file_name)
 	if err != nil {
 		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取转存后的直链失败！！！",err)
 	}
@@ -194,17 +199,18 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 		URL: DownloadUrl,
 	}
 
-	/*
+	//zzzzzzzzzzzzzzzzzzzz
 	newfile := &model.Object{
 		ID:       new_file_id,
-		HashInfo: utils.NewHashInfo(utils.SHA1, "12345"),
+		HashInfo: utils.NewHashInfo(utils.SHA1, ContentHash),
 	}
 	
 	fs := stream.FileStream{
 		Obj: newfile,
 		Ctx: ctx,
 	}
-	*/
+	
+	ss, _ := stream.NewSeekableStream(fs, link)
 	
 	return link, nil
 }
@@ -287,11 +293,12 @@ func (d *AliyundriveShare2Open) Copy2Myali(ctx context.Context, src_driveid stri
 
 }
 
-func (d *AliyundriveShare2Open) GetmyLink(ctx context.Context, file_id string, file_name string) (string, error) {
+func (d *AliyundriveShare2Open) GetmyLink(ctx context.Context, file_id string, file_name string) (string, string, error) {
 	existed_download_url, ok := d.DownloadUrl_dict[file_id]
+	existed_file_hash, _ := d.FileHash_dict[file_id];
 	if ok {
 		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"下载链接已存在: ",file_name)
-		return existed_download_url, nil
+		return existed_download_url, existed_file_hash, nil
 	}
 
     count := 1
@@ -318,9 +325,10 @@ func (d *AliyundriveShare2Open) GetmyLink(ctx context.Context, file_id string, f
 
         if err == nil {
             d.DownloadUrl_dict[file_id] = utils.Json.Get(res, "url").ToString()
-			fmt.Println("文件: ",file_name,"  新增下载直链: ", d.DownloadUrl_dict[file_id])
+			d.FileHash_dict[file_id] = utils.Json.Get(res, "content_hash").ToString()
+			fmt.Println("文件: ",file_name,"  新增下载直链: ", d.DownloadUrl_dict[file_id]," SHA1", d.FileHash_dict[file_id])
 			fmt.Println(time.Now().Format("01-02-2006 15:04:05")," 已成功缓存了",len(d.DownloadUrl_dict),"个文件")
-			return d.DownloadUrl_dict[file_id], nil
+			return d.DownloadUrl_dict[file_id], d.FileHash_dict[file_id], nil
 		}	
     }	
 }
