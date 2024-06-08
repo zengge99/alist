@@ -521,7 +521,7 @@ func (d *AliyundriveShare2Open) rapidUpload(fileSize int64, fileName, dirID, pre
 		}
 
 		//zzzzzzzzzzzzzzzzz
-		fmt.Println("115转存响应：", decrypted)
+		fmt.Println("115转存响应：", string(decrypted))
 
 		if err = driver115.CheckErr(json.Unmarshal(decrypted, &result), &result, resp); err != nil {
 			return nil, err
@@ -538,6 +538,10 @@ func (d *AliyundriveShare2Open) rapidUpload(fileSize int64, fileName, dirID, pre
 		}
 		result.SHA1 = fileID
 	}
+
+	//zzzzzzzzzzzzzzzzz
+	marshal, _ := utils.Json.MarshalToString(result)
+	fmt.Println("115转存响应(解析后)：", marshal)
 
 	return &result, nil
 }
