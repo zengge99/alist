@@ -255,7 +255,9 @@ func (d *AliyundriveShare2Open) Link(ctx context.Context, file model.Obj, args m
 	}
 	preHash = strings.ToUpper(preHash)
 
-	d.rapidUpload(ss.GetSize(), ss.GetName(), "0", preHash, ContentHash, ss)
+	fmt.Println("115秒传信息：",ss.GetSize(), ss.GetName(), d.DirId, preHash, ContentHash)
+
+	d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, ContentHash, ss)
 	
 	return link, nil
 }
