@@ -198,6 +198,11 @@ func (d *Pan115) rapidUpload(fileSize int64, fileName, dirID, preID, fileID stri
 		if decrypted, err = ecdhCipher.Decrypt(bodyBytes); err != nil {
 			return nil, err
 		}
+
+		//zzzzzzzzzzzzzzzzz
+		fmt.Println("115转存响应：", string(decrypted))
+
+
 		if err = driver115.CheckErr(json.Unmarshal(decrypted, &result), &result, resp); err != nil {
 			return nil, err
 		}
@@ -213,6 +218,10 @@ func (d *Pan115) rapidUpload(fileSize int64, fileName, dirID, preID, fileID stri
 		}
 		result.SHA1 = fileID
 	}
+
+		//zzzzzzzzzzzzzzzzz
+		marshal, _ := utils.Json.MarshalToString(result)
+		fmt.Println("115转存响应(解析后)：", marshal)
 
 	return &result, nil
 }
