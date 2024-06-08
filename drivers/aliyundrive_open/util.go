@@ -137,7 +137,7 @@ func (d *AliyundriveOpen) list(ctx context.Context, data base.Json) (*Files, err
 	})
 
 	//zzzzzzzzzzzzzzzzzzzzzzzzz
-	fmt.Println("阿里open原始响应: ", res.String())
+	fmt.Println("阿里open原始响应: ", string(res))
 
 	if err != nil {
 		return nil, err
