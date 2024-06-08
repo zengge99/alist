@@ -56,6 +56,9 @@ require (
 	github.com/upyun/go-sdk/v3 v3.0.4
 	github.com/winfsp/cgofuse v1.5.1-0.20230130140708-f87f5db493b5
 	github.com/xhofe/tache v0.1.1
+	github.com/tidwall/gjson v1.17.1
+	github.com/tidwall/pretty v1.2.0
+	github.com/tidwall/match v1.1.1
 	golang.org/x/crypto v0.19.0
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225
 	golang.org/x/image v0.15.0
