@@ -322,7 +322,7 @@ func (d *AliyundriveShare2Open) GetmyLink(ctx context.Context, file_id string, f
 		
         if err != nil {
             if count > 2 {
-                  return "http://img.xiaoya.pro/abnormal.png", "", "", err
+                  return "http://img.xiaoya.pro/abnormal.png", "", 0, err
             }
 			fmt.Println("获取下载链接失败第",count,"次 ",file_name)
             count += 1
