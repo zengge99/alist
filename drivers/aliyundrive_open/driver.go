@@ -104,6 +104,8 @@ func (d *AliyundriveOpen) Link(ctx context.Context, file model.Obj, args model.L
 	if d.limitLink == nil {
 		return nil, fmt.Errorf("driver not init")
 	}
+	//zzzzzzzzzzzzzzzzz
+	fmt.Println("调用open Link")
 	return d.limitLink(ctx, file)
 }
 
@@ -168,6 +170,8 @@ func (d *AliyundriveOpen) Rename(ctx context.Context, srcObj model.Obj, newName 
 
 func (d *AliyundriveOpen) Copy(ctx context.Context, srcObj, dstDir model.Obj) error {
 	_, err := d.request("/adrive/v1.0/openFile/copy", http.MethodPost, func(req *resty.Request) {
+		//zzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+		fmt.Println("调用open Copy")
 		req.SetBody(base.Json{
 			"drive_id":          d.DriveId,
 			"file_id":           srcObj.GetID(),
@@ -193,6 +197,8 @@ func (d *AliyundriveOpen) Remove(ctx context.Context, obj model.Obj) error {
 }
 
 func (d *AliyundriveOpen) Put(ctx context.Context, dstDir model.Obj, stream model.FileStreamer, up driver.UpdateProgress) (model.Obj, error) {
+	//zzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+	fmt.Println("调用open Put")
 	return d.upload(ctx, dstDir, stream, up)
 }
 
