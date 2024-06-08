@@ -8,15 +8,12 @@ import (
 	"encoding/json"
 	"github.com/tidwall/gjson"
 
-	"bytes"
+	//"bytes"
 	"crypto/tls"
-	"encoding/json"
 	"io"
 	"net/url"
-	"path/filepath"
 	"strconv"
 	"strings"
-	"sync"
 	
 	"github.com/alist-org/alist/v3/drivers/base"
     "github.com/alist-org/alist/v3/internal/conf"
@@ -30,7 +27,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	driver115 "github.com/SheltonZhu/115driver/pkg/driver"
-	crypto "github.com/gaoyb7/115drive-webdav/115"
+	//crypto "github.com/gaoyb7/115drive-webdav/115"
 	"github.com/orzogc/fake115uploader/cipher"
 	"github.com/pkg/errors"
 	"github.com/alist-org/alist/v3/pkg/http_range"
