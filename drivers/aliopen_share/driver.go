@@ -39,6 +39,10 @@ import (
 
 var UserAgent = driver115.UA115Desktop
 
+const (
+	appVer = "2.0.3.6"
+)
+
 type AliyundriveShare2Open struct {
 	model.Storage
 	Addition
@@ -415,6 +419,22 @@ func (d *AliyundriveShare2Open) login() error {
 		return errors.New("missing cookie")
 	}
 	return d.client.LoginCheck()
+}
+
+func UploadDigestRange(stream model.FileStreamer, rangeSpec string) (result string, err error) {
+	var start, end int64
+	if _, err = fmt.Sscanf(rangeSpec, "%d-%d", &start, &end); err != nil {
+		return
+	}
+
+	length := end - start + 1
+	reader, err := stream.RangeRead(http_range.Range{Start: start, Length: length})
+	hashStr, err := utils.HashReader(utils.SHA1, reader)
+	if err != nil {
+		return "", err
+	}
+	result = strings.ToUpper(hashStr)
+	return
 }
 
 func (d *AliyundriveShare2Open) rapidUpload(fileSize int64, fileName, dirID, preID, fileID string, stream model.FileStreamer) (*driver115.UploadInitResp, error) {
