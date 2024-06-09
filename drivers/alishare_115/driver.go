@@ -62,7 +62,7 @@ type AliyundriveShare2Pan115 struct {
 	FileID_Link		 map[string]string
 	FileID_Link_model		 map[string]*model.Link
 	client  *driver115.Pan115Client
-	pan115LoginStatus bool = false
+	pan115LoginStatus	bool
 }
 
 func (d *AliyundriveShare2Pan115) Config() driver.Config {
@@ -153,6 +153,8 @@ func (d *AliyundriveShare2Pan115) Init(ctx context.Context) error {
 		d.FileSize_dict = make(map[string]int64)
 	}
     })
+
+	d.pan115LoginStatus = false
 	
 	return nil
 }
