@@ -32,6 +32,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/alist-org/alist/v3/pkg/http_range"
 	//"golang.org/x/time/rate"
+
+	"crypto/sha1"
 )
 
 var UserAgent = driver115.UA115Desktop
@@ -190,6 +192,33 @@ func (d *AliyundriveShare2Pan115) List(ctx context.Context, dir model.Obj, args 
 	}
 }
 
+func calculateSHA1(url string) (string, error) {
+    resp, err := http.Get(url)
+    if err != nil {
+        return "", err
+    }
+    defer resp.Body.Close()
+
+    var buf []byte
+    const maxBytes = 128 * 1024 // 128KB
+    if resp.ContentLength > maxBytes {
+        buf = make([]byte, maxBytes)
+    } else {
+        buf = make([]byte, resp.ContentLength)
+    }
+
+    _, err = io.ReadFull(resp.Body, buf)
+    if err != nil {
+        return "", err
+    }
+
+    hash := sha1.New()
+    hash.Write(buf)
+    sha1Hash := hash.Sum(nil)
+
+    return fmt.Sprintf("%x", sha1Hash), nil
+}
+
 func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
 	file_id :=  file.GetID()
 	file_name := file.GetName()
@@ -269,6 +298,10 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		return link, nil
 	}
 	preHash = strings.ToUpper(preHash)
+
+	//zzzzzzzzzzz
+	preHash1, _ := calculateSHA1(link.URL)
+	fmt.Println("两个HASH值对比：",preHash,preHash1)
 
 	fullHash := ss.GetHash().GetHash(utils.SHA1)
 	if len(fullHash) <= 0 {
