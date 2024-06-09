@@ -288,10 +288,11 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	}
 
 	time.Sleep(1000 * time.Millisecond)
-	
+
 	var userAgent = args.Header.Get("User-Agent")
 	downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
 	if err != nil {
+		fmt.Println("[Debug] DownloadWithUA failed")
 		return link, nil
 	}
 
