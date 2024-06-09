@@ -20,7 +20,7 @@ import (
 	"github.com/alist-org/alist/v3/internal/driver"
 	"github.com/alist-org/alist/v3/internal/errs"
 	"github.com/alist-org/alist/v3/internal/model"
-	"github.com/alist-org/alist/v3/internal/stream"
+	//"github.com/alist-org/alist/v3/internal/stream"
 	"github.com/alist-org/alist/v3/pkg/cron"
 	"github.com/alist-org/alist/v3/pkg/utils"
 	"github.com/go-resty/resty/v2"
@@ -364,7 +364,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 
 	var fastInfo *driver115.UploadInitResp
 
-	if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, nil); err != nil {
+	if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, link.URL); err != nil {
 		fmt.Println("[Debug] rapidUpload failed")
 		return link, nil
 	}
