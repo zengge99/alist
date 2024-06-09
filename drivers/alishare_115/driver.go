@@ -250,10 +250,12 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	}
 	reader, err := ss.RangeRead(http_range.Range{Start: 0, Length: hashSize})
 	if err != nil {
+		fmt.Println("[Debug] RangeRead failed")
 		return link, nil
 	}
 	preHash, err := utils.HashReader(utils.SHA1, reader)
 	if err != nil {
+		fmt.Println("[Debug] HashReader failed")
 		return link, nil
 	}
 	preHash = strings.ToUpper(preHash)
@@ -262,25 +264,31 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	if len(fullHash) <= 0 {
 		tmpF, err := ss.CacheFullInTempFile()
 		if err != nil {
+			fmt.Println("[Debug] CacheFullInTempFile failed")
 			return link, nil
 		}
 		fullHash, err = utils.HashFile(utils.SHA1, tmpF)
 		if err != nil {
+			fmt.Println("[Debug] HashFile failed")
 			return link, nil
 		}
 	}
 	fullHash = strings.ToUpper(fullHash)
 
 	if ok, err := d.client.UploadAvailable(); err != nil || !ok {
+		fmt.Println("[Debug] UploadAvailable failed")
 		return link, nil
 	}
 
 	var fastInfo *driver115.UploadInitResp
 
 	if fastInfo, err = d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash, ss); err != nil {
+		fmt.Println("[Debug] rapidUpload failed")
 		return link, nil
 	}
 
+	time.Sleep(1000 * time.Millisecond)
+	
 	var userAgent = args.Header.Get("User-Agent")
 	downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
 	if err != nil {
