@@ -216,7 +216,7 @@ func calculateSHA1(url string) (string, error) {
     hash.Write(buf)
     sha1Hash := hash.Sum(nil)
 
-    return fmt.Sprintf("%x", sha1Hash), nil
+    return strings.ToUpper(fmt.Sprintf("%x", sha1Hash)), nil
 }
 
 func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
