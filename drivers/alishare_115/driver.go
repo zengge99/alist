@@ -30,7 +30,7 @@ import (
 	//crypto "github.com/gaoyb7/115drive-webdav/115"
 	"github.com/orzogc/fake115uploader/cipher"
 	"github.com/pkg/errors"
-	"github.com/alist-org/alist/v3/pkg/http_range"
+	//"github.com/alist-org/alist/v3/pkg/http_range"
 	//"golang.org/x/time/rate"
 
 	"crypto/sha1"
