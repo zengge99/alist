@@ -192,6 +192,7 @@ func (d *AliyundriveShare2Pan115) List(ctx context.Context, dir model.Obj, args 
 	}
 }
 
+/*
 func calculateSHA1(url string) (string, error) {
     resp, err := http.Get(url)
     if err != nil {
@@ -217,6 +218,42 @@ func calculateSHA1(url string) (string, error) {
     sha1Hash := hash.Sum(nil)
 
     return strings.ToUpper(fmt.Sprintf("%x", sha1Hash)), nil
+}
+*/
+
+func calculateSHA1Range(url string, start int64, end int64) (string, error) {
+    client := &http.Client{}
+    req, err := http.NewRequest("GET", url, nil)
+    if err != nil {
+        return "", err
+    }
+
+    rangeHeader := fmt.Sprintf("bytes=%d-%d", start, end)
+    req.Header.Set("Range", rangeHeader)
+
+    resp, err := client.Do(req)
+    if err != nil {
+        return "", err
+    }
+    defer resp.Body.Close()
+
+    var buf []byte
+    readBytes := end - start + 1
+    buf = make([]byte, readBytes)
+
+    _, err = io.ReadAtLeast(resp.Body, buf, int(readBytes))
+    if err != nil {
+        return "", err
+    }
+
+    hash := sha1.New()
+    hash.Write(buf)
+    sha1Hash := hash.Sum(nil)
+
+    // Convert the SHA1 hash to uppercase
+    sha1HashUpper := fmt.Sprintf("%X", sha1Hash)
+
+    return sha1HashUpper, nil
 }
 
 func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
@@ -300,7 +337,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	preHash = strings.ToUpper(preHash)
 
 	//zzzzzzzzzzz
-	preHash1, _ := calculateSHA1(link.URL)
+	preHash1, _ := calculateSHA1Range(link.URL, 0, 128*1024)
 	fmt.Println("两个HASH值对比：",preHash,preHash1)
 
 	fullHash := ss.GetHash().GetHash(utils.SHA1)
