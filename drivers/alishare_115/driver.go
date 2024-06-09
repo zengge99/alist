@@ -292,7 +292,13 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 
 	d.FileID_Link_model[file_id] = link
 
-	//d.client.Delete(fastInfo.FileID)
+	if files, ok := d.client.List(d.dirID); ok{
+		for index, value := range files {
+			if value.Name == ss.GetName() && strings.ToUpper(value.Sha1) == fullHash{
+				d.client.Delete(value.FileID)
+			}
+		}
+	}
 	
 	return link, nil
 }
