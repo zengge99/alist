@@ -238,7 +238,9 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		Ctx: ctx,
 	}
 	
-	ss, _ := stream.NewSeekableStream(fs, link)
+	if ss, err := stream.NewSeekableStream(fs, link); err != nil {
+		return link, nil
+	}
 
 	const PreHashSize int64 = 128 * utils.KB
 	hashSize := PreHashSize
@@ -274,22 +276,27 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 
 	var fastInfo *driver115.UploadInitResp
 
-	if fastInfo, err = d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash, ss); err == nil {
-		var userAgent = args.Header.Get("User-Agent")
-		downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
-		if err == nil {
-			fmt.Println("获取115下载新链接：", downloadInfo.Url.Url)
-			link = &model.Link{
-				URL:    downloadInfo.Url.Url,
-				Header: downloadInfo.Header,
-			}
-			if files, err := d.client.List(d.DirId); err == nil {
-				for i := 0; i < len(*files); i++ {
-					file := (*files)[i]
-					if file.Name == ss.GetName() && strings.ToUpper(file.Sha1) == fullHash{
-						d.client.Delete(file.FileID)
-					}
-				}
+	if fastInfo, err = d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash, ss); err != nil {
+		return link, nil
+	}
+
+	var userAgent = args.Header.Get("User-Agent")
+	downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
+	if err != nil {
+		return link, nil
+	}
+
+	fmt.Println("获取到115下载新链接：", downloadInfo.Url.Url)
+	
+	link = &model.Link{
+		URL:    downloadInfo.Url.Url,
+		Header: downloadInfo.Header,
+	}
+	if files, err := d.client.List(d.DirId); err == nil {
+		for i := 0; i < len(*files); i++ {
+			file := (*files)[i]
+			if file.Name == ss.GetName() && strings.ToUpper(file.Sha1) == fullHash{
+				d.client.Delete(file.FileID)
 			}
 		}
 	}
