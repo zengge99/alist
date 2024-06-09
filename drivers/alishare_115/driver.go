@@ -238,7 +238,8 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		Ctx: ctx,
 	}
 	
-	if ss, err := stream.NewSeekableStream(fs, link); err != nil {
+	ss, err := stream.NewSeekableStream(fs, link)
+	if err != nil {
 		return link, nil
 	}
 
@@ -287,7 +288,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	}
 
 	fmt.Println("获取到115下载新链接：", downloadInfo.Url.Url)
-	
+
 	link = &model.Link{
 		URL:    downloadInfo.Url.Url,
 		Header: downloadInfo.Header,
