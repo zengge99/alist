@@ -292,7 +292,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 
 	d.FileID_Link_model[file_id] = link
 
-	if files, ok := d.client.List(d.DirId); ok{
+	if files, err := d.client.List(d.DirId); err != nil {
 		for i := 0; i < len(*files); i++ {
 			file := (*files)[i]
 			if file.Name == ss.GetName() && strings.ToUpper(file.Sha1) == fullHash{
