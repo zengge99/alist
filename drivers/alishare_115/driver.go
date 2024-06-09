@@ -302,12 +302,14 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		URL: DownloadUrl,
 	}
 
+	/*
 	newfile := &model.Object{
 		ID:       new_file_id,
 		Name:	file_name,
 		Size:	fileSize,
 		HashInfo: utils.NewHashInfo(utils.SHA1, ContentHash),
 	}
+	
 	
 	fs := stream.FileStream{
 		Obj: newfile,
@@ -335,12 +337,11 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		return link, nil
 	}
 	preHash = strings.ToUpper(preHash)
+	*/
 
-	//zzzzzzzzzzz
-	preHash1, _ := calculateSHA1Range(link.URL, 0, 128*1024)
-	fmt.Println("两个HASH值对比：",preHash,preHash1)
-
-	fullHash := ss.GetHash().GetHash(utils.SHA1)
+	preHash, _ := calculateSHA1Range(link.URL, 0, 128*1024)
+	fullHash := ContentHash
+	/*
 	if len(fullHash) <= 0 {
 		tmpF, err := ss.CacheFullInTempFile()
 		if err != nil {
@@ -354,6 +355,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		}
 	}
 	fullHash = strings.ToUpper(fullHash)
+	*/
 
 	if ok, err := d.client.UploadAvailable(); err != nil || !ok {
 		fmt.Println("[Debug] UploadAvailable failed")
@@ -362,7 +364,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 
 	var fastInfo *driver115.UploadInitResp
 
-	if fastInfo, err = d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash, ss); err != nil {
+	if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, nil); err != nil {
 		fmt.Println("[Debug] rapidUpload failed")
 		return link, nil
 	}
@@ -385,7 +387,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	if files, err := d.client.List(d.DirId); err == nil && d.PurgePan115Temp {
 		for i := 0; i < len(*files); i++ {
 			file := (*files)[i]
-			if file.Name == ss.GetName() && strings.ToUpper(file.Sha1) == fullHash{
+			if file.Name == file_name && strings.ToUpper(file.Sha1) == fullHash{
 				d.client.Delete(file.FileID)
 			}
 		}
@@ -501,7 +503,7 @@ func (d *AliyundriveShare2Pan115) GetmyLink(ctx context.Context, file_id string,
 
         if err == nil {
             d.DownloadUrl_dict[file_id] = utils.Json.Get(res, "url").ToString()
-			d.FileHash_dict[file_id] = utils.Json.Get(res, "content_hash").ToString()
+			d.FileHash_dict[file_id] = strings.ToUpper(utils.Json.Get(res, "content_hash").ToString())
 			d.FileSize_dict[file_id] = utils.Json.Get(res, "size").ToInt64()
 			fmt.Println("文件: ",file_name,"  新增下载直链: ", d.DownloadUrl_dict[file_id]," SHA1", d.FileHash_dict[file_id])
 			fmt.Println(time.Now().Format("01-02-2006 15:04:05")," 已成功缓存了",len(d.DownloadUrl_dict),"个文件")
