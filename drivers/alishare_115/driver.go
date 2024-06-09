@@ -62,6 +62,7 @@ type AliyundriveShare2Pan115 struct {
 	FileID_Link		 map[string]string
 	FileID_Link_model		 map[string]*model.Link
 	client  *driver115.Pan115Client
+	pan115LoginStatus bool = false
 }
 
 func (d *AliyundriveShare2Pan115) Config() driver.Config {
@@ -153,7 +154,7 @@ func (d *AliyundriveShare2Pan115) Init(ctx context.Context) error {
 	}
     })
 	
-	return d.login()
+	return nil
 }
 
 func (d *AliyundriveShare2Pan115) Drop(ctx context.Context) error {
@@ -190,6 +191,11 @@ func (d *AliyundriveShare2Pan115) List(ctx context.Context, dir model.Obj, args 
 func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
 	file_id :=  file.GetID()
 	file_name := file.GetName()
+
+	if !d.pan115LoginStatus {
+		d.login()
+		d.pan115LoginStatus = true
+	}
 
 	if link, ok := d.FileID_Link_model[file_id]; ok {
 		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取缓存链接：",file_name,link.URL)
