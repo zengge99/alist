@@ -569,6 +569,8 @@ func (d *AliyundriveShare2Pan115) login() error {
 	return d.client.LoginCheck()
 }
 
+
+/*
 func UploadDigestRange(stream model.FileStreamer, rangeSpec string) (result string, err error) {
 	var start, end int64
 	if _, err = fmt.Sscanf(rangeSpec, "%d-%d", &start, &end); err != nil {
@@ -659,6 +661,101 @@ func (d *AliyundriveShare2Pan115) rapidUpload(fileSize int64, fileName, dirID, p
 			// Update signKey & signVal
 			signKey = result.SignKey
 			signVal, err = UploadDigestRange(stream, result.SignCheck)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			retry = false
+		}
+		result.SHA1 = fileID
+	}
+
+	return &result, nil
+}
+*/
+
+func UploadDigestRange(linkUrl string, rangeSpec string) (result string, err error) {
+	var start, end int64
+	if _, err = fmt.Sscanf(rangeSpec, "%d-%d", &start, &end); err != nil {
+		return
+	}
+	return calculateSHA1Range(linkUrl, start, end)
+}
+
+func (d *AliyundriveShare2Pan115) rapidUpload(fileSize int64, fileName, dirID, preID, fileID string, linkUrl string) (*driver115.UploadInitResp, error) {
+	var (
+		ecdhCipher   *cipher.EcdhCipher
+		encrypted    []byte
+		decrypted    []byte
+		encodedToken string
+		err          error
+		target       = "U_1_" + dirID
+		bodyBytes    []byte
+		result       = driver115.UploadInitResp{}
+		fileSizeStr  = strconv.FormatInt(fileSize, 10)
+	)
+	if ecdhCipher, err = cipher.NewEcdhCipher(); err != nil {
+		return nil, err
+	}
+
+	userID := strconv.FormatInt(d.client.UserID, 10)
+	form := url.Values{}
+	form.Set("appid", "0")
+	form.Set("appversion", appVer)
+	form.Set("userid", userID)
+	form.Set("filename", fileName)
+	form.Set("filesize", fileSizeStr)
+	form.Set("fileid", fileID)
+	form.Set("target", target)
+	form.Set("sig", d.client.GenerateSignature(fileID, target))
+
+	signKey, signVal := "", ""
+	for retry := true; retry; {
+		t := driver115.Now()
+
+		if encodedToken, err = ecdhCipher.EncodeToken(t.ToInt64()); err != nil {
+			return nil, err
+		}
+
+		params := map[string]string{
+			"k_ec": encodedToken,
+		}
+
+		form.Set("t", t.String())
+		form.Set("token", d.client.GenerateToken(fileID, preID, t.String(), fileSizeStr, signKey, signVal))
+		if signKey != "" && signVal != "" {
+			form.Set("sign_key", signKey)
+			form.Set("sign_val", signVal)
+		}
+		if encrypted, err = ecdhCipher.Encrypt([]byte(form.Encode())); err != nil {
+			return nil, err
+		}
+
+		req := d.client.NewRequest().
+			SetQueryParams(params).
+			SetBody(encrypted).
+			SetHeaderVerbatim("Content-Type", "application/x-www-form-urlencoded").
+			SetDoNotParseResponse(true)
+		resp, err := req.Post(driver115.ApiUploadInit)
+		if err != nil {
+			return nil, err
+		}
+		data := resp.RawBody()
+		defer data.Close()
+		if bodyBytes, err = io.ReadAll(data); err != nil {
+			return nil, err
+		}
+		if decrypted, err = ecdhCipher.Decrypt(bodyBytes); err != nil {
+			return nil, err
+		}
+
+		if err = driver115.CheckErr(json.Unmarshal(decrypted, &result), &result, resp); err != nil {
+			return nil, err
+		}
+		if result.Status == 7 {
+			// Update signKey & signVal
+			signKey = result.SignKey
+			signVal, err = UploadDigestRange(linkUrl, result.SignCheck)
 			if err != nil {
 				return nil, err
 			}
