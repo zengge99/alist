@@ -192,6 +192,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	file_id :=  file.GetID()
 	file_name := file.GetName()
 
+	//不放Init里面，避免加载速度变慢
 	if !d.pan115LoginStatus {
 		d.login()
 		d.pan115LoginStatus = true
