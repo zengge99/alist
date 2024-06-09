@@ -23,6 +23,7 @@ type Addition struct {
 	//115参数
 	Cookie       string  `json:"cookie" type:"text" required:"true" help:"115 cookie required"`
 	DirId       string  `json:"dir_id" type:"text" required:"true" help:"115 temp dir id"`
+	PurgePan115Temp    bool   `json:"purge_pan115_temp" default:"false"`
 }
 
 var config = driver.Config{
