@@ -237,7 +237,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		Obj: newfile,
 		Ctx: ctx,
 	}
-	
+
 	ss, err := stream.NewSeekableStream(fs, link)
 	if err != nil {
 		return link, nil
@@ -293,7 +293,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		URL:    downloadInfo.Url.Url,
 		Header: downloadInfo.Header,
 	}
-	if files, err := d.client.List(d.DirId); err == nil {
+	if files, err := d.client.List(d.DirId); err == nil && d.PurgePan115Temp {
 		for i := 0; i < len(*files); i++ {
 			file := (*files)[i]
 			if file.Name == ss.GetName() && strings.ToUpper(file.Sha1) == fullHash{
