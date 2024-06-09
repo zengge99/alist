@@ -192,7 +192,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	file_name := file.GetName()
 
 	if link, ok := d.FileID_Link_model[file_id]; ok {
-		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取115下载缓存链接：",file_name,link.URL)
+		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取缓存链接：",file_name,link.URL)
 		return link, nil;
 	}
 
@@ -247,11 +247,11 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	}
 	reader, err := ss.RangeRead(http_range.Range{Start: 0, Length: hashSize})
 	if err != nil {
-		return nil, err
+		return link, nil
 	}
 	preHash, err := utils.HashReader(utils.SHA1, reader)
 	if err != nil {
-		return nil, err
+		return link, nil
 	}
 	preHash = strings.ToUpper(preHash)
 
@@ -259,48 +259,43 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	if len(fullHash) <= 0 {
 		tmpF, err := ss.CacheFullInTempFile()
 		if err != nil {
-			return nil, err
+			return link, nil
 		}
 		fullHash, err = utils.HashFile(utils.SHA1, tmpF)
 		if err != nil {
-			return nil, err
+			return link, nil
 		}
 	}
 	fullHash = strings.ToUpper(fullHash)
 
 	if ok, err := d.client.UploadAvailable(); err != nil || !ok {
-		return nil, err
+		return link, nil
 	}
 
 	var fastInfo *driver115.UploadInitResp
 
-	if fastInfo, err = d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash, ss); err != nil {
-		return nil, err
-	}
-
-	var userAgent = args.Header.Get("User-Agent")
-	downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
-	if err != nil {
-		return nil, err
-	}
-	link = &model.Link{
-		URL:    downloadInfo.Url.Url,
-		Header: downloadInfo.Header,
-	}
-
-	fmt.Println("获取115下载新链接：", downloadInfo.Url.Url)
-
-	d.FileID_Link_model[file_id] = link
-
-	if files, err := d.client.List(d.DirId); err != nil {
-		for i := 0; i < len(*files); i++ {
-			file := (*files)[i]
-			if file.Name == ss.GetName() && strings.ToUpper(file.Sha1) == fullHash{
-				d.client.Delete(file.FileID)
+	if fastInfo, err = d.rapidUpload(ss.GetSize(), ss.GetName(), d.DirId, preHash, fullHash, ss); err == nil {
+		var userAgent = args.Header.Get("User-Agent")
+		downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
+		if err == nil {
+			fmt.Println("获取115下载新链接：", downloadInfo.Url.Url)
+			link = &model.Link{
+				URL:    downloadInfo.Url.Url,
+				Header: downloadInfo.Header,
+			}
+			if files, err := d.client.List(d.DirId); err == nil {
+				for i := 0; i < len(*files); i++ {
+					file := (*files)[i]
+					if file.Name == ss.GetName() && strings.ToUpper(file.Sha1) == fullHash{
+						d.client.Delete(file.FileID)
+					}
+				}
 			}
 		}
 	}
-	
+
+	d.FileID_Link_model[file_id] = link
+
 	return link, nil
 }
 
