@@ -572,6 +572,7 @@ func (d *AliyundriveShare2Pan115) login() error {
 		}
 		d.client.ImportCredential(cr)
 	} else {
+	    fmt.Println("通过QR码登陆：", d.Addition.Cookie)
 		s := &driver115.QRCodeSession{
 			UID: d.Addition.Cookie,
 		}
@@ -579,6 +580,7 @@ func (d *AliyundriveShare2Pan115) login() error {
 			return errors.Wrap(err, "failed to login by qrcode")
 		}
 		d.Addition.Cookie = fmt.Sprintf("UID=%s;CID=%s;SEID=%s", cr.UID, cr.CID, cr.SEID)
+		fmt.Println("通过QR码获取到cookie：", d.Addition.Cookie)
 		d.client.ImportCredential(cr)
 	}
 	return d.client.LoginCheck()
