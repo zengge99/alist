@@ -579,6 +579,7 @@ func (d *AliyundriveShare2Pan115) login() error {
 			return errors.Wrap(err, "failed to login by qrcode")
 		}
 		d.Addition.Cookie = fmt.Sprintf("UID=%s;CID=%s;SEID=%s", cr.UID, cr.CID, cr.SEID)
+		d.client.ImportCredential(cr)
 	}
 	return d.client.LoginCheck()
 }
