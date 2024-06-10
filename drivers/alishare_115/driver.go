@@ -572,7 +572,7 @@ func (d *AliyundriveShare2Pan115) login() error {
 		}
 		d.client.ImportCredential(cr)
 	} else {
-		s := &driver115.Cookie{
+		s := &driver115.QRCodeSession{
 			UID: d.Addition.Cookie,
 		}
 		if cr, err = d.client.QRCodeLoginWithApp(s, driver115.LoginApp(d.Cookie)); err != nil {
