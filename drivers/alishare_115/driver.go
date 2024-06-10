@@ -561,17 +561,27 @@ func (d *AliyundriveShare2Pan115) login() error {
 	}
 	d.client = driver115.New(opts...)
 	cr := &driver115.Credential{}
-	if d.Addition.Cookie != "" {
+	if d.Addition.Cookie == "" {
+		return errors.New("missing cookie")
+	}
+
+
+	if strings.Contains(d.Addition.Cookie, "=") {
 		if err = cr.FromCookie(d.Addition.Cookie); err != nil {
 			return errors.Wrap(err, "failed to login by cookies")
 		}
 		d.client.ImportCredential(cr)
 	} else {
-		return errors.New("missing cookie")
+		s := &driver115.Cookie{
+			UID: d.Addition.Cookie,
+		}
+		if cr, err = d.client.QRCodeLoginWithApp(s, driver115.LoginApp(d.Cookie)); err != nil {
+			return errors.Wrap(err, "failed to login by qrcode")
+		}
+		d.Addition.Cookie = fmt.Sprintf("UID=%s;CID=%s;SEID=%s", cr.UID, cr.CID, cr.SEID)
 	}
 	return d.client.LoginCheck()
 }
-
 
 /*
 func UploadDigestRange(stream model.FileStreamer, rangeSpec string) (result string, err error) {
