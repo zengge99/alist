@@ -609,6 +609,7 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
 			newConfigContent += line + "\n"
 		}
 		file.Close()
+		fmt.Println("写入新配置：", newConfigContent)
 		os.WriteFile("/data/ali2115.txt", []byte(newConfigContent), 0o777)
 	}
     
