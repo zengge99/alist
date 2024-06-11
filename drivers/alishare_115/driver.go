@@ -232,7 +232,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	
 	if cachePickCode, ok := d.pickCodeMap[file_id]; ok && !d.PurgePan115Temp {
 	    var userAgent = args.Header.Get("User-Agent")
-	    downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
+	    downloadInfo, err := d.client.DownloadWithUA(cachePickCode, userAgent)
 	    if err == nil {
 		    fmt.Println("重新获取115已有文件新链接：", downloadInfo.Url.Url)
 	        link := &model.Link{
