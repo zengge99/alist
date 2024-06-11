@@ -571,10 +571,6 @@ func (d *AliyundriveShare2Pan115) login() error {
 }
 
 func (d *AliyundriveShare2Pan115) preLogin() error {
-	if strings.Contains(d.Addition.Cookie, "=") {
-		return nil
-	}
-	
 	opts := []driver115.Option{
 		driver115.UA(UserAgent),
 		func(c *driver115.Pan115Client) {
@@ -582,11 +578,15 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
 		},
 	}
 	d.client = driver115.New(opts...)
+	if strings.Contains(d.Addition.Cookie, "=") {
+		return nil
+	}
+
 	cr := &driver115.Credential{}
 	s := &driver115.QRCodeSession{
 		UID: d.Addition.Cookie,
 	}
-	if cr, err = d.client.QRCodeLoginWithApp(s, driver115.LoginApp("linux")); err != nil {
+	if cr, err := d.client.QRCodeLoginWithApp(s, driver115.LoginApp("linux")); err != nil {
 		fmt.Println("通过QR码登陆失败：", d.Addition.Cookie)
 		return errors.Wrap(err, "failed to login by qrcode")
 	}
