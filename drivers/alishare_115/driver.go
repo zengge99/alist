@@ -574,12 +574,7 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
 	if strings.Contains(d.Addition.Cookie, "=") {
 		return nil
 	}
-	file, err := os.Open("/data/ali2115.txt")
-    if err != nil {
-        return nil
-    }
-    defer file.Close()
-
+	
 	opts := []driver115.Option{
 		driver115.UA(UserAgent),
 		func(c *driver115.Pan115Client) {
@@ -597,19 +592,22 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
 	}
 	d.Addition.Cookie = fmt.Sprintf("UID=%s;CID=%s;SEID=%s", cr.UID, cr.CID, cr.SEID)
 	fmt.Println("通过QR码获取到cookie：", d.Addition.Cookie)
-	d.client.ImportCredential(cr)
 	
-    scanner := bufio.NewScanner(file)
-    var newConfigContent string
-    for scanner.Scan() {
-        line := scanner.Text()
-        if strings.Contains(line, "cookie=") {
-            line = "cookie=\"" + d.Addition.Cookie + "\""
-        }
-        newConfigContent += line + "\n"
-    }
-
-    os.WriteFile("/data/ali2115.txt", []byte(newConfigContent), 0644)
+	file, err := os.Open("/data/ali2115.txt")
+	defer file.Close()
+	if err == nil {
+		scanner := bufio.NewScanner(file)
+		var newConfigContent string
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.Contains(line, "cookie=") {
+				line = "cookie=\"" + d.Addition.Cookie + "\""
+			}
+			newConfigContent += line + "\n"
+		}
+		os.WriteFile("/data/ali2115.txt", []byte(newConfigContent), 0644)
+	}
+    
 	return nil
 }
 
