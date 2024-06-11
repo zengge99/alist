@@ -598,7 +598,6 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
 	fmt.Println("通过QR码获取到cookie：", d.Addition.Cookie)
 	
 	file, err := os.Open("/data/ali2115.txt")
-	defer file.Close()
 	if err == nil {
 		scanner := bufio.NewScanner(file)
 		var newConfigContent string
@@ -609,7 +608,8 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
 			}
 			newConfigContent += line + "\n"
 		}
-		os.WriteFile("/data/ali2115.txt", []byte(newConfigContent), 0644)
+		file.Close()
+		os.WriteFile("/data/ali2115.txt", []byte(newConfigContent), 0o777)
 	}
     
 	return nil
