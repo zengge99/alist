@@ -578,11 +578,13 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
 		},
 	}
 	d.client = driver115.New(opts...)
+	if(base.Pan115Cookie != ""){
+		d.Addition.Cookie = base.Pan115Cookie
+	}
 	if strings.Contains(d.Addition.Cookie, "=") {
 		return nil
 	}
 
-	cr := &driver115.Credential{}
 	s := &driver115.QRCodeSession{
 		UID: d.Addition.Cookie,
 	}
@@ -591,6 +593,7 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
 		return errors.Wrap(err, "failed to login by qrcode")
 	}
 	d.Addition.Cookie = fmt.Sprintf("UID=%s;CID=%s;SEID=%s", cr.UID, cr.CID, cr.SEID)
+	base.Pan115Cookie = d.Addition.Cookie 
 	fmt.Println("通过QR码获取到cookie：", d.Addition.Cookie)
 	
 	file, err := os.Open("/data/ali2115.txt")
