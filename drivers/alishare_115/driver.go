@@ -67,6 +67,7 @@ type AliyundriveShare2Pan115 struct {
 	FileID_Link_model		 map[string]*model.Link
 	client  *driver115.Pan115Client
 	pan115LoginStatus	bool
+	pickCodeMap map[string]string
 }
 
 func (d *AliyundriveShare2Pan115) Config() driver.Config {
@@ -130,21 +131,6 @@ func (d *AliyundriveShare2Pan115) Init(ctx context.Context) error {
 		}
 	})
 
-	/*
-	d.cron3 = cron.NewCron(time.Hour * time.Duration(conf.Conf.Auto_clean_interval))
-	d.cron3.Do(func() {
-		if conf.Conf.Autoremove == 1 {
-			var siteMap map[string]string
-			siteMap = make(map[string]string)
-			d.CopyFiles = siteMap
-			err := d.Purge_temp_folder(ctx)
-			if err != nil {
-				fmt.Printf("\033[0;32m%s%s%s\033[0m\n",time.Now().Format("01-02-2006 15:04:05"),"获取转存文件夹错误",err)
-			}
-		}
-	})
-	*/
-
     d.cron2 = cron.NewCron(time.Minute * 13)
     d.cron2.Do(func() {
 	if len(d.FileID_Link) > 0 {
@@ -157,9 +143,8 @@ func (d *AliyundriveShare2Pan115) Init(ctx context.Context) error {
 		d.FileSize_dict = make(map[string]int64)
 	}
     })
-
 	d.pan115LoginStatus = false
-
+	d.pickCodeMap = make(map[string]string)
 	return d.preLogin()
 }
 
@@ -193,35 +178,6 @@ func (d *AliyundriveShare2Pan115) List(ctx context.Context, dir model.Obj, args 
 		}	
 	}
 }
-
-/*
-func calculateSHA1(url string) (string, error) {
-    resp, err := http.Get(url)
-    if err != nil {
-        return "", err
-    }
-    defer resp.Body.Close()
-
-    var buf []byte
-    const maxBytes = 128 * 1024 // 128KB
-    if resp.ContentLength > maxBytes {
-        buf = make([]byte, maxBytes)
-    } else {
-        buf = make([]byte, resp.ContentLength)
-    }
-
-    _, err = io.ReadFull(resp.Body, buf)
-    if err != nil {
-        return "", err
-    }
-
-    hash := sha1.New()
-    hash.Write(buf)
-    sha1Hash := hash.Sum(nil)
-
-    return strings.ToUpper(fmt.Sprintf("%x", sha1Hash)), nil
-}
-*/
 
 func calculateSHA1Range(url string, start int64, end int64) (string, error) {
     client := &http.Client{}
@@ -269,9 +225,22 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		}
 	}
 
-	if link, ok := d.FileID_Link_model[file_id]; ok {
+	if link, ok := d.FileID_Link_model[file_id]; ok && d.PurgePan115Temp {
 		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取缓存链接：",file_name,link.URL)
 		return link, nil;
+	}
+	
+	if cachePickCode, ok := d.pickCodeMap[file_id]; ok && !d.PurgePan115Temp {
+	    var userAgent = args.Header.Get("User-Agent")
+	    downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
+	    if err == nil {
+		    fmt.Println("重新获取115已有文件新链接：", downloadInfo.Url.Url)
+	        link := &model.Link{
+		        URL:    downloadInfo.Url.Url,
+		        Header: downloadInfo.Header,
+	        }
+	        return link, nil
+	    }
 	}
 
 	new_file_id, err := d.Copy2Myali( ctx , d.MyAliDriveId, file_id, file_name)
@@ -304,59 +273,6 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		URL: DownloadUrl,
 	}
 
-	/*
-	newfile := &model.Object{
-		ID:       new_file_id,
-		Name:	file_name,
-		Size:	fileSize,
-		HashInfo: utils.NewHashInfo(utils.SHA1, ContentHash),
-	}
-	
-	
-	fs := stream.FileStream{
-		Obj: newfile,
-		Ctx: ctx,
-	}
-
-	ss, err := stream.NewSeekableStream(fs, link)
-	if err != nil {
-		return link, nil
-	}
-
-	const PreHashSize int64 = 128 * utils.KB
-	hashSize := PreHashSize
-	if ss.GetSize() < PreHashSize {
-		hashSize = ss.GetSize()
-	}
-	reader, err := ss.RangeRead(http_range.Range{Start: 0, Length: hashSize})
-	if err != nil {
-		fmt.Println("[Debug] RangeRead failed")
-		return link, nil
-	}
-	preHash, err := utils.HashReader(utils.SHA1, reader)
-	if err != nil {
-		fmt.Println("[Debug] HashReader failed")
-		return link, nil
-	}
-	preHash = strings.ToUpper(preHash)
-	*/
-
-	/*
-	if len(fullHash) <= 0 {
-		tmpF, err := ss.CacheFullInTempFile()
-		if err != nil {
-			fmt.Println("[Debug] CacheFullInTempFile failed")
-			return link, nil
-		}
-		fullHash, err = utils.HashFile(utils.SHA1, tmpF)
-		if err != nil {
-			fmt.Println("[Debug] HashFile failed")
-			return link, nil
-		}
-	}
-	fullHash = strings.ToUpper(fullHash)
-	*/
-
 	if ok, err := d.client.UploadAvailable(); err != nil || !ok {
 		fmt.Println("[Debug] UploadAvailable failed")
 		return link, nil
@@ -383,6 +299,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		return link, nil
 	}
 
+    d.pickCodeMap[file_id] = fastInfo.PickCode
 	fmt.Println("获取到115下载新链接：", downloadInfo.Url.Url)
 
 	link = &model.Link{
@@ -624,110 +541,6 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
     
 	return nil
 }
-
-/*
-func UploadDigestRange(stream model.FileStreamer, rangeSpec string) (result string, err error) {
-	var start, end int64
-	if _, err = fmt.Sscanf(rangeSpec, "%d-%d", &start, &end); err != nil {
-		return
-	}
-
-	length := end - start + 1
-	reader, err := stream.RangeRead(http_range.Range{Start: start, Length: length})
-	hashStr, err := utils.HashReader(utils.SHA1, reader)
-	if err != nil {
-		return "", err
-	}
-	result = strings.ToUpper(hashStr)
-	return
-}
-
-func (d *AliyundriveShare2Pan115) rapidUpload(fileSize int64, fileName, dirID, preID, fileID string, stream model.FileStreamer) (*driver115.UploadInitResp, error) {
-	var (
-		ecdhCipher   *cipher.EcdhCipher
-		encrypted    []byte
-		decrypted    []byte
-		encodedToken string
-		err          error
-		target       = "U_1_" + dirID
-		bodyBytes    []byte
-		result       = driver115.UploadInitResp{}
-		fileSizeStr  = strconv.FormatInt(fileSize, 10)
-	)
-	if ecdhCipher, err = cipher.NewEcdhCipher(); err != nil {
-		return nil, err
-	}
-
-	userID := strconv.FormatInt(d.client.UserID, 10)
-	form := url.Values{}
-	form.Set("appid", "0")
-	form.Set("appversion", appVer)
-	form.Set("userid", userID)
-	form.Set("filename", fileName)
-	form.Set("filesize", fileSizeStr)
-	form.Set("fileid", fileID)
-	form.Set("target", target)
-	form.Set("sig", d.client.GenerateSignature(fileID, target))
-
-	signKey, signVal := "", ""
-	for retry := true; retry; {
-		t := driver115.Now()
-
-		if encodedToken, err = ecdhCipher.EncodeToken(t.ToInt64()); err != nil {
-			return nil, err
-		}
-
-		params := map[string]string{
-			"k_ec": encodedToken,
-		}
-
-		form.Set("t", t.String())
-		form.Set("token", d.client.GenerateToken(fileID, preID, t.String(), fileSizeStr, signKey, signVal))
-		if signKey != "" && signVal != "" {
-			form.Set("sign_key", signKey)
-			form.Set("sign_val", signVal)
-		}
-		if encrypted, err = ecdhCipher.Encrypt([]byte(form.Encode())); err != nil {
-			return nil, err
-		}
-
-		req := d.client.NewRequest().
-			SetQueryParams(params).
-			SetBody(encrypted).
-			SetHeaderVerbatim("Content-Type", "application/x-www-form-urlencoded").
-			SetDoNotParseResponse(true)
-		resp, err := req.Post(driver115.ApiUploadInit)
-		if err != nil {
-			return nil, err
-		}
-		data := resp.RawBody()
-		defer data.Close()
-		if bodyBytes, err = io.ReadAll(data); err != nil {
-			return nil, err
-		}
-		if decrypted, err = ecdhCipher.Decrypt(bodyBytes); err != nil {
-			return nil, err
-		}
-
-		if err = driver115.CheckErr(json.Unmarshal(decrypted, &result), &result, resp); err != nil {
-			return nil, err
-		}
-		if result.Status == 7 {
-			// Update signKey & signVal
-			signKey = result.SignKey
-			signVal, err = UploadDigestRange(stream, result.SignCheck)
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			retry = false
-		}
-		result.SHA1 = fileID
-	}
-
-	return &result, nil
-}
-*/
 
 func UploadDigestRange(linkUrl string, rangeSpec string) (result string, err error) {
 	var start, end int64
