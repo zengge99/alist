@@ -603,20 +603,24 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
             file.Close()
         }
     }()
-	if err == nil {
-		scanner := bufio.NewScanner(file)
-		var newConfigContent string
-		for scanner.Scan() {
-			line := scanner.Text()
-			if strings.Contains(line, "cookie=") {
-				line = "cookie=\"" + d.Addition.Cookie + "\""
-			}
-			newConfigContent += line + "\n"
+    
+    if err != nil {
+        fmt.Println("打开小雅115配置文件失败：", err)
+        return nil
+    }
+    
+	scanner := bufio.NewScanner(file)
+	var newConfigContent string
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "cookie=") {
+			line = "cookie=\"" + d.Addition.Cookie + "\""
 		}
-		file.Seek(0, 0)
-		fmt.Println("写入新配置：", newConfigContent)
-		os.WriteFile("/data/ali2115.txt", []byte(newConfigContent), 0644)
+		newConfigContent += line + "\n"
 	}
+	file.Seek(0, 0)
+	fmt.Println("写入新配置：", newConfigContent)
+	os.WriteFile("/data/ali2115.txt", []byte(newConfigContent), 0644)
     
 	return nil
 }
