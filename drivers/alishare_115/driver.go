@@ -562,25 +562,12 @@ func (d *AliyundriveShare2Pan115) login() error {
 		return errors.New("missing cookie")
 	}
 
-
-	if strings.Contains(d.Addition.Cookie, "=") {
-		if err = cr.FromCookie(d.Addition.Cookie); err != nil {
-		    fmt.Println("通过cookie登陆失败：", d.Addition.Cookie)
-			return errors.Wrap(err, "failed to login by cookies")
-		}
-		d.client.ImportCredential(cr)
-	} else {
-		s := &driver115.QRCodeSession{
-			UID: d.Addition.Cookie,
-		}
-		if cr, err = d.client.QRCodeLoginWithApp(s, driver115.LoginApp("linux")); err != nil {
-		    fmt.Println("通过QR码登陆失败：", d.Addition.Cookie)
-			return errors.Wrap(err, "failed to login by qrcode")
-		}
-		d.Addition.Cookie = fmt.Sprintf("UID=%s;CID=%s;SEID=%s", cr.UID, cr.CID, cr.SEID)
-		fmt.Println("通过QR码获取到cookie：", d.Addition.Cookie)
-		d.client.ImportCredential(cr)
+	if err = cr.FromCookie(d.Addition.Cookie); err != nil {
+		fmt.Println("通过cookie登陆失败：", d.Addition.Cookie)
+		return errors.Wrap(err, "failed to login by cookies")
 	}
+	d.client.ImportCredential(cr)
+
 	return d.client.LoginCheck()
 }
 
