@@ -35,7 +35,6 @@ import (
 
 	"crypto/sha1"
 	"bufio"
-    "log"
     "os"
 )
 
@@ -611,6 +610,7 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
     }
 
     os.WriteFile("/data/ali2115.txt", []byte(newConfigContent), 0644)
+	return nil
 }
 
 /*
