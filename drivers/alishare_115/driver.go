@@ -225,12 +225,14 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		}
 	}
 
+/*
 	if link, ok := d.FileID_Link_model[file_id]; ok && d.PurgePan115Temp {
 		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取缓存链接：",file_name,link.URL)
 		return link, nil;
 	}
+*/
 	
-	if cachePickCode, ok := d.pickCodeMap[file_id]; ok && !d.PurgePan115Temp {
+	if cachePickCode, ok := d.pickCodeMap[file_id]; ok {
 	    var userAgent = args.Header.Get("User-Agent")
 	    downloadInfo, err := d.client.DownloadWithUA(cachePickCode, userAgent)
 	    if err == nil {
