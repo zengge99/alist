@@ -597,9 +597,9 @@ func (d *AliyundriveShare2Pan115) preLogin() error {
 	base.Pan115Cookie = d.Addition.Cookie 
 	fmt.Println("通过QR码获取到cookie：", d.Addition.Cookie)
 	
-	file, err := os.Open("/data/ali2115.txt", os.O_RDWR, 0644)
+	file, err := os.OpenFile("/data/ali2115.txt", os.O_RDWR, 0644)
 	defer func() {
-        if err != nil {
+        if err == nil {
             file.Close()
         }
     }()
