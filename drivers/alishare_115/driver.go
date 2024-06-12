@@ -280,10 +280,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		return link, nil
 	}
 
-	preHash, err := calculateSHA1Range(link.URL, 0, 128*1024-1)
-	if err != nil {
-		return link, nil
-	}
+	preHash := "2EF7BDE608CE5404E97D5F042F95F89F1C232871"
 	fullHash := ContentHash
 
 	var fastInfo *driver115.UploadInitResp
