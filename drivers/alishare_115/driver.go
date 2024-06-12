@@ -280,7 +280,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		return link, nil
 	}
 
-	preHash, err := calculateSHA1Range(link.URL, 0, 128*1024)
+	preHash, err := calculateSHA1Range(link.URL, 0, 128*1024-1)
 	if err != nil {
 		return link, nil
 	}
@@ -624,6 +624,7 @@ func (d *AliyundriveShare2Pan115) rapidUpload(fileSize int64, fileName, dirID, p
 		}
 		if result.Status == 7 {
 			// Update signKey & signVal
+			fmt.Println("要求再次上传sha1")
 			signKey = result.SignKey
 			signVal, err = UploadDigestRange(linkUrl, result.SignCheck)
 			if err != nil {
