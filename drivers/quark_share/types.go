@@ -1,4 +1,4 @@
-package quarkShare
+ package quarkShare
 
 import (
 	"time"
@@ -60,11 +60,13 @@ func fileToObj(f File) *model.Object {
 
 func fileToObj(f File) *Object {
 	return &Object{
-		ID:       f.Fid,
-		Name:     f.FileName,
-		Size:     f.Size,
-		Modified: time.UnixMilli(f.UpdatedAt),
-		IsFolder: !f.File,
+		Object: model.Object{
+		    ID:       f.Fid,
+		    Name:     f.FileName,
+		    Size:     f.Size,
+		    Modified: time.UnixMilli(f.UpdatedAt),
+		    IsFolder: !f.File,
+	    },
 		FidToken: f.FidToken,
 	}
 }
