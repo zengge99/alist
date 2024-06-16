@@ -43,7 +43,7 @@ type File struct {
 
 type Object struct {
 	model.Object
-	FidToken
+	FidToken string
 }
 
 /*
