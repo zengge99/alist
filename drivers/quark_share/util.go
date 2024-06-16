@@ -42,6 +42,7 @@ func (d *QuarkShare) request(pathname string, method string, callback base.ReqCa
 	var e Resp
 	req.SetError(&e)
 	res, err := req.Execute(method, u)
+	fmt.Println("原始响应：", string(res), err)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +81,7 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 		var resp SortResp
 		r, err := d.request("/share/sharepage/detail", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
-		}, nil)
+		}, &resp)
 		fmt.Println("获取目录的原始响应：", string(r), err)
 		if err != nil {
 			return nil, err
