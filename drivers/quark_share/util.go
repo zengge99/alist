@@ -102,7 +102,7 @@ func (d *QuarkShare) getStoken() (string) {
 		req.SetBody(data)
 	}, nil)
 	d.stoken = utils.Json.Get(rsp, "data", "stoken").ToString()
-	fmt.Println("获取stoken的原始响应：", rsp, "stoken", d.stoken)
+	fmt.Println("获取stoken的原始响应：", string(rsp), "stoken", d.stoken)
 	return d.stoken
 }
 
