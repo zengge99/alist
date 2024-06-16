@@ -42,7 +42,7 @@ func (d *QuarkShare) request(pathname string, method string, callback base.ReqCa
 	var e Resp
 	req.SetError(&e)
 	res, err := req.Execute(method, u)
-	fmt.Println("原始响应：", string(res), err)
+	fmt.Println("原始响应：", string(res.Body()), err)
 	if err != nil {
 		return nil, err
 	}
