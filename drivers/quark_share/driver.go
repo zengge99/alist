@@ -1,4 +1,3 @@
-
 package quarkShare
 
 import (
@@ -57,6 +56,29 @@ func (d *QuarkShare) List(ctx context.Context, dir model.Obj, args model.ListArg
 	})
 }
 
+func (d *QuarkShare) save(file file model.Obj) (string, error) {
+    data := base.Json{
+		"fid_list": file.GetID(),
+		"fid_token_list": file.(*Object).FidToken,
+		"to_pdir_fid": "0",
+        "pwd_id": d.Addition.ShareId,
+        "stoken": d.stoken,
+        "pdir_fid": "0",
+        "scene": "link",
+	}
+	query := map[string]string{
+	    "uc_param_str":     "",
+        "__dt": strconv.FormatInt(int(rand.Float64()*(5-1)+1) * 60 * 1000, 10),
+        "__t":  strconv.FormatInt(time.Now().UnixNano()/1000000, 10),
+	}
+    rsp, _ := d.request("/share/sharepage/save", http.MethodPost, func(req *resty.Request) {
+		req.SetQueryParams(query)
+		req.SetBody(data)
+	}, nil)
+	fmt.Println("原始响应：", string(rsp))
+	return nil, nil
+}
+
 func (d *QuarkShare) link(fid string) (*model.Link, error) {
     data := base.Json{
 		"fids": fid,
@@ -84,25 +106,7 @@ func (d *QuarkShare) link(fid string) (*model.Link, error) {
 }
 
 func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
-    data := base.Json{
-		"fid_list": file.GetID(),
-		"fid_token_list": file.(*Object).FidToken,
-		"to_pdir_fid": "0",
-        "pwd_id": d.Addition.ShareId,
-        "stoken": d.stoken,
-        "pdir_fid": "0",
-        "scene": "link",
-	}
-	query := map[string]string{
-	    "uc_param_str":     "",
-        "__dt":         int(rand.Float64()*(5-1)+1) * 60 * 1000,
-        "__t":          time.Now().Unix(),
-	}
-    rsp, _ := d.request("/share/sharepage/save", http.MethodPost, func(req *resty.Request) {
-		req.SetQueryParams(query)
-		req.SetBody(data)
-	}, nil)
-	fmt.Println("原始响应：", string(rsp))
+    save(file.GetID())
     
     
     return link(file.GetID())
