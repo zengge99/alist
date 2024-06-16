@@ -23,6 +23,7 @@ type QuarkShare struct {
 	Addition
 	config driver.Config
 	conf   Conf
+	stoken string
 }
 
 func (d *QuarkShare) Config() driver.Config {
@@ -35,6 +36,7 @@ func (d *QuarkShare) GetAddition() driver.Additional {
 
 func (d *QuarkShare) Init(ctx context.Context) error {
 	_, err := d.request("/config", http.MethodGet, nil, nil)
+	d.getStoken()
 	return err
 }
 
