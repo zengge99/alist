@@ -69,7 +69,7 @@ func (d *QuarkShare) save(file model.Obj) (string, error) {
 	}
 	query := map[string]string{
 	    "uc_param_str":     "",
-        "__dt": strconv.FormatInt(int(rand.Float64()*(5-1)+1) * 60 * 1000, 10),
+        "__dt": strconv.FormatInt(int64(rand.Float64()*(5-1)+1) * 60 * 1000, 10),
         "__t":  strconv.FormatInt(time.Now().UnixNano()/1000000, 10),
 	}
     rsp, _ := d.request("/share/sharepage/save", http.MethodPost, func(req *resty.Request) {
@@ -79,7 +79,22 @@ func (d *QuarkShare) save(file model.Obj) (string, error) {
 	taskId := utils.Json.Get(rsp, "data", "task_id").ToString()
 	fmt.Println("原始响应：", string(rsp))
 	
-	
+	retry := 0
+	query = map[string]string{
+	   "uc_param_str":     "",
+	   "task_id": taskId,
+        "__dt": strconv.FormatInt(int64(rand.Float64()*(5-1)+1) * 60 * 1000, 10),
+        "__t":  strconv.FormatInt(time.Now().UnixNano()/1000000, 10),
+	}
+	for {
+	    query["retry_index"] = strconv.FormatInt(retry, 10)
+	    
+	    
+	    retry++
+	    if retry > 3 {
+	        break
+	    }
+	}
 	return "", nil
 }
 
@@ -110,10 +125,10 @@ func (d *QuarkShare) link(fid string) (*model.Link, error) {
 }
 
 func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
-    save(file.GetID())
+    d.save(file.GetID())
     
     
-    return link(file.GetID())
+    return d.link(file.GetID())
 }
 
 func (d *QuarkShare) MakeDir(ctx context.Context, parentDir model.Obj, dirName string) error {
