@@ -42,7 +42,6 @@ func (d *QuarkShare) request(pathname string, method string, callback base.ReqCa
 	var e Resp
 	req.SetError(&e)
 	res, err := req.Execute(method, u)
-	fmt.Println("原始响应：", string(res.Body()), err)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +60,6 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	files := make([]File, 0)
 	page := 1
 	size := 100
-	fmt.Println("parent：", parent)
 	query := map[string]string{
 	    "uc_param_str":     "",
 		"pwd_id":	d.Addition.ShareId,
@@ -84,7 +82,6 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 		r, err := d.request("/share/sharepage/detail", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
 		}, &resp)
-		fmt.Println("获取目录的原始响应：", string(r), err)
 		if err != nil {
 			return nil, err
 		}
@@ -112,7 +109,6 @@ func (d *QuarkShare) getStoken() (string) {
 		req.SetBody(data)
 	}, nil)
 	d.stoken = utils.Json.Get(rsp, "data", "stoken").ToString()
-	fmt.Println("获取stoken的原始响应：", string(rsp), "stoken", d.stoken)
 	return d.stoken
 }
 
