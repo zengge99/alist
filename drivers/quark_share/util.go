@@ -95,12 +95,12 @@ func (d *QuarkShare) getStoken() (string, error) {
 		"pwd_id": d.Addition.ShareId,
 		"passcode":        "",
 	}
-	rsp, err := d.request("/share/sharepage/token", http.MethodPost, func(req *resty.Request) {
+	rsp, _ := d.request("/share/sharepage/token", http.MethodPost, func(req *resty.Request) {
 		req.SetQueryParams(query)
 		req.SetBody(data)
-	})
-	d.stoken = utils.Json.Get(res, "data", "stoken").ToString()
-	fmt.Println("获取stoken的原始响应：", res, "stoken", d.stoken)
+	}, nil)
+	d.stoken = utils.Json.Get(rsp, "data", "stoken").ToString()
+	fmt.Println("获取stoken的原始响应：", rsp, "stoken", d.stoken)
 	return d.stoken
 }
 
