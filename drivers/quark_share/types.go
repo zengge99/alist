@@ -16,6 +16,7 @@ type Resp struct {
 
 type File struct {
 	Fid      string `json:"fid"`
+	FidToken string `json:"share_fid_token"`
 	FileName string `json:"file_name"`
 	//PdirFid      string `json:"pdir_fid"`
 	//Category     int    `json:"category"`
@@ -40,6 +41,12 @@ type File struct {
 	//Thumbnail string `json:"thumbnail,omitempty"`
 }
 
+type Object struct {
+	model.Object
+	FidToken
+}
+
+/*
 func fileToObj(f File) *model.Object {
 	return &model.Object{
 		ID:       f.Fid,
@@ -47,6 +54,18 @@ func fileToObj(f File) *model.Object {
 		Size:     f.Size,
 		Modified: time.UnixMilli(f.UpdatedAt),
 		IsFolder: !f.File,
+	}
+}
+*/
+
+func fileToObj(f File) *Object {
+	return &Object{
+		ID:       f.Fid,
+		Name:     f.FileName,
+		Size:     f.Size,
+		Modified: time.UnixMilli(f.UpdatedAt),
+		IsFolder: !f.File,
+		FidToken: f.FidToken,
 	}
 }
 
