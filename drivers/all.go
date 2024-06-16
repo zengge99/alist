@@ -1,4 +1,7 @@
-package drivers
+purge_ali_temp=false
+cookie="9df88ad7eee7646f86175a1fbcbb9d020170ebfa"
+purge_pan115_temp=false
+dir_id=0package drivers
 
 import (
 	_ "github.com/alist-org/alist/v3/drivers/115"
@@ -58,6 +61,7 @@ import (
 	_ "github.com/alist-org/alist/v3/drivers/wopan"
 	_ "github.com/alist-org/alist/v3/drivers/yandex_disk"
 	_ "github.com/alist-org/alist/v3/drivers/quark_share"
+	_ "github.com/alist-org/alist/v3/drivers/alishare_115"
 )
 
 // All do nothing,just for import
