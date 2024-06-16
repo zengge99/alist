@@ -61,14 +61,16 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	files := make([]File, 0)
 	page := 1
 	size := 100
+	fmt.Println("parent：", parent)
 	query := map[string]string{
 	    "uc_param_str":     "",
 		"pwd_id":	d.Addition.ShareId,
 		"stoken":	url.QueryEscape(d.stoken),
 		"pdir_fid":     parent,
+		"force":	"0",
 		"_size":        strconv.Itoa(size),
-		"_fetch_banner":    "0",
-		"_fetch_share": "0",
+		"_fetch_banner":    "1",
+		"_fetch_share": "1",
 		"_fetch_total": "1",
 		"__dt":        "",
 		"__t":		"",
