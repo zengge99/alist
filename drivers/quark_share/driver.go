@@ -1,3 +1,4 @@
+
 package quarkShare
 
 import (
@@ -90,14 +91,14 @@ func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkAr
         "pwd_id": d.Addition.ShareId,
         "stoken": d.stoken,
         "pdir_fid": "0",
-        "scene": "link"
+        "scene": "link",
 	}
 	query := map[string]string{
 	    "uc_param_str":     "",
         "__dt":         int(rand.Float64()*(5-1)+1) * 60 * 1000,
         "__t":          time.Now().Unix(),
 	}
-    rsp, _ := d.request("/share/sharepage/token", http.MethodPost, func(req *resty.Request) {
+    rsp, _ := d.request("/share/sharepage/save", http.MethodPost, func(req *resty.Request) {
 		req.SetQueryParams(query)
 		req.SetBody(data)
 	}, nil)
