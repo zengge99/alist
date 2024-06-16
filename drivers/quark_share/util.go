@@ -85,6 +85,25 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	return files, nil
 }
 
+func (d *QuarkShare) getStoken() (string, error) {
+	query := map[string]string{
+		"uc_param_str":     "",
+		"__dt":        "",
+		"__t":		"",
+	}
+	data := base.Json{
+		"pwd_id": d.Addition.ShareId,
+		"passcode":        "",
+	}
+	rsp, err := d.request("/share/sharepage/token", http.MethodPost, func(req *resty.Request) {
+		req.SetQueryParams(query)
+		req.SetBody(data)
+	})
+	d.stoken = utils.Json.Get(res, "data", "stoken").ToString()
+	fmt.Println("获取stoken的原始响应：", res, "stoken", d.stoken)
+	return d.stoken
+}
+
 func (d *QuarkShare) upPre(file model.FileStreamer, parentId string) (UpPreResp, error) {
 	now := time.Now()
 	data := base.Json{
