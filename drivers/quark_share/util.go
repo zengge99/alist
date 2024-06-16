@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	//"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -63,7 +62,7 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	query := map[string]string{
 	    "uc_param_str":     "",
 		"pwd_id":	d.Addition.ShareId,
-		"stoken":	d.stoken, //url.QueryEscape(d.stoken),
+		"stoken":	d.stoken, 
 		"pdir_fid":     parent,
 		"force":	"0",
 		"_size":        strconv.Itoa(size),
@@ -79,7 +78,7 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	for {
 		query["_page"] = strconv.Itoa(page)
 		var resp SortResp
-		r, err := d.request("/share/sharepage/detail", http.MethodGet, func(req *resty.Request) {
+		_, err := d.request("/share/sharepage/detail", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
 		}, &resp)
 		if err != nil {
