@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"time"
 	"fmt"
+	"math/rand"
 
 	"github.com/alist-org/alist/v3/drivers/base"
 	"github.com/alist-org/alist/v3/internal/driver"
@@ -55,11 +56,10 @@ func (d *QuarkShare) List(ctx context.Context, dir model.Obj, args model.ListArg
 	})
 }
 
-func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
-	data := base.Json{
-		"fids": []string{file.GetID()},
+func (d *QuarkShare) link(fid string) (*model.Link, error) {
+    data := base.Json{
+		"fids": fid,
 	}
-	fmt.Println("文件的FidToken：", file.(*Object).FidToken)
 	var resp DownResp
 	ua := d.conf.ua
 	_, err := d.request("/file/download", http.MethodPost, func(req *resty.Request) {
@@ -80,6 +80,31 @@ func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkAr
 		Concurrency: 2,
 		PartSize:    10 * utils.MB,
 	}, nil
+}
+
+func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
+    data := base.Json{
+		"fid_list": file.GetID(),
+		"fid_token_list": file.(*Object).FidToken,
+		"to_pdir_fid": "0",
+        "pwd_id": d.Addition.ShareId,
+        "stoken": d.stoken,
+        "pdir_fid": "0",
+        "scene": "link"
+	}
+	query := map[string]string{
+	    "uc_param_str":     "",
+        "__dt":         int(rand.Float64()*(5-1)+1) * 60 * 1000,
+        "__t":          time.Now().Unix(),
+	}
+    rsp, _ := d.request("/share/sharepage/token", http.MethodPost, func(req *resty.Request) {
+		req.SetQueryParams(query)
+		req.SetBody(data)
+	}, nil)
+	fmt.Println("原始响应：", string(rsp))
+    
+    
+    return link(file.GetID())
 }
 
 func (d *QuarkShare) MakeDir(ctx context.Context, parentDir model.Obj, dirName string) error {
