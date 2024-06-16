@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -61,7 +62,7 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	size := 100
 	query := map[string]string{
 		"pwd_id":	d.Addition.ShareId,
-		"stoken":	d.stoken,
+		"stoken":	url.QueryEscape(d.stoken),
 		"pdir_fid":     parent,
 		"_size":        strconv.Itoa(size),
 		"_fetch_total": "1",
@@ -72,9 +73,10 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	for {
 		query["_page"] = strconv.Itoa(page)
 		var resp SortResp
-		_, err := d.request("/share/sharepage/detail", http.MethodGet, func(req *resty.Request) {
+		r, err := d.request("/share/sharepage/detail", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
 		}, &resp)
+		fmt.Println("获取目录的原始响应：", string(r))
 		if err != nil {
 			return nil, err
 		}
