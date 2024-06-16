@@ -92,6 +92,7 @@ func (d *QuarkShare) save(file model.Obj) (string, error) {
 			req.SetQueryParams(query)
 		}, nil)
 	    
+	    time.Sleep(2 * time.Second)
 	    retry++
 	    if retry > 3 {
 	        break
@@ -127,7 +128,7 @@ func (d *QuarkShare) link(fid string) (*model.Link, error) {
 }
 
 func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
-    d.save(file
+    d.save(file)
     
     
     return d.link(file.GetID())
