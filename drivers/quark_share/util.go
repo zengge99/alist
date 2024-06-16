@@ -80,7 +80,7 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 		var resp SortResp
 		r, err := d.request("/share/sharepage/detail", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
-		}, &resp)
+		}, nil)
 		fmt.Println("获取目录的原始响应：", string(r))
 		if err != nil {
 			return nil, err
