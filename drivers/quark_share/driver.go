@@ -56,7 +56,7 @@ func (d *QuarkShare) List(ctx context.Context, dir model.Obj, args model.ListArg
 	})
 }
 
-func (d *QuarkShare) save(file file model.Obj) (string, error) {
+func (d *QuarkShare) save(file model.Obj) (string, error) {
     data := base.Json{
 		"fid_list": file.GetID(),
 		"fid_token_list": file.(*Object).FidToken,
