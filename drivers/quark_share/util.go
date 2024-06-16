@@ -60,8 +60,8 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	page := 1
 	size := 100
 	query := map[string]string{
-		"pwd_id"	d.Addition.ShareId,
-		"stoken"	d.stoken,
+		"pwd_id":	d.Addition.ShareId,
+		"stoken":	d.stoken,
 		"pdir_fid":     parent,
 		"_size":        strconv.Itoa(size),
 		"_fetch_total": "1",
