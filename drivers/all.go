@@ -57,8 +57,7 @@ import (
 	_ "github.com/alist-org/alist/v3/drivers/weiyun"
 	_ "github.com/alist-org/alist/v3/drivers/wopan"
 	_ "github.com/alist-org/alist/v3/drivers/yandex_disk"
-	_ "github.com/alist-org/alist/v3/drivers/aliopen_share"
-	_ "github.com/alist-org/alist/v3/drivers/alishare_115"
+	_ "github.com/alist-org/alist/v3/drivers/quark_share"
 )
 
 // All do nothing,just for import
