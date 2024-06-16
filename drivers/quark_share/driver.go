@@ -79,7 +79,7 @@ func (d *QuarkShare) save(file model.Obj) (string, error) {
 	taskId := utils.Json.Get(rsp, "data", "task_id").ToString()
 	fmt.Println("原始响应：", string(rsp))
 	
-	retry := 0
+	retry := int64(0)
 	query = map[string]string{
 	   "uc_param_str":     "",
 	   "task_id": taskId,
@@ -88,7 +88,9 @@ func (d *QuarkShare) save(file model.Obj) (string, error) {
 	}
 	for {
 	    query["retry_index"] = strconv.FormatInt(retry, 10)
-	    
+	    _, _ := d.request("/task", http.MethodGet, func(req *resty.Request) {
+			req.SetQueryParams(query)
+		}, nil)
 	    
 	    retry++
 	    if retry > 3 {
@@ -125,7 +127,7 @@ func (d *QuarkShare) link(fid string) (*model.Link, error) {
 }
 
 func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
-    d.save(file.GetID())
+    d.save(file
     
     
     return d.link(file.GetID())
