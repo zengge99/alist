@@ -10,6 +10,7 @@ type Addition struct {
 	driver.RootID
 	OrderBy        string `json:"order_by" type:"select" options:"none,file_type,file_name,updated_at" default:"none"`
 	OrderDirection string `json:"order_direction" type:"select" options:"asc,desc" default:"asc"`
+	ShareId	string `json:"share_id" type:"text" required:"true" help:"quark share id"`
 }
 
 type Conf struct {
