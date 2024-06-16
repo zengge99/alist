@@ -66,6 +66,8 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 		"pdir_fid":     parent,
 		"_size":        strconv.Itoa(size),
 		"_fetch_total": "1",
+		"__dt":        "",
+		"__t":		"",
 	}
 	if d.OrderBy != "none" {
 		query["_sort"] = "file_type:asc," + d.OrderBy + ":" + d.OrderDirection
