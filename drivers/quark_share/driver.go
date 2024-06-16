@@ -10,6 +10,7 @@ import (
 	"time"
 	"fmt"
 	"math/rand"
+	"strconv"
 
 	"github.com/alist-org/alist/v3/drivers/base"
 	"github.com/alist-org/alist/v3/internal/driver"
@@ -75,8 +76,11 @@ func (d *QuarkShare) save(file model.Obj) (string, error) {
 		req.SetQueryParams(query)
 		req.SetBody(data)
 	}, nil)
+	taskId := utils.Json.Get(rsp, "data", "task_id").ToString()
 	fmt.Println("原始响应：", string(rsp))
-	return nil, nil
+	
+	
+	return "", nil
 }
 
 func (d *QuarkShare) link(fid string) (*model.Link, error) {
