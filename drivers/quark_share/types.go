@@ -41,14 +41,12 @@ type File struct {
 	//Thumbnail string `json:"thumbnail,omitempty"`
 }
 
-/*
 type Object struct {
 	model.Object
 	FidToken string
 }
-*/
 
-
+/*
 func fileToObj(f File) *model.Object {
 	return &model.Object{
 		ID:       f.Fid,
@@ -58,8 +56,8 @@ func fileToObj(f File) *model.Object {
 		IsFolder: !f.File,
 	}
 }
+*/
 
-/*
 func fileToObj(f File) *Object {
 	return &Object{
 		ID:       f.Fid,
@@ -70,7 +68,6 @@ func fileToObj(f File) *Object {
 		FidToken: f.FidToken,
 	}
 }
-*/
 
 type SortResp struct {
 	Resp
