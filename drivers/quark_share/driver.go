@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 	"time"
-	//"fmt"
+	"fmt"
 
 	"github.com/alist-org/alist/v3/drivers/base"
 	"github.com/alist-org/alist/v3/internal/driver"
@@ -59,7 +59,7 @@ func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkAr
 	data := base.Json{
 		"fids": []string{file.GetID()},
 	}
-	//fmt.Println("文件的FidToken：", file.(Object).FidToken)
+	fmt.Println("文件的FidToken：", file.(*Object).FidToken)
 	var resp DownResp
 	ua := d.conf.ua
 	_, err := d.request("/file/download", http.MethodPost, func(req *resty.Request) {
