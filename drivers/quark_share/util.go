@@ -60,6 +60,8 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	page := 1
 	size := 100
 	query := map[string]string{
+		"pwd_id"	d.Addition.ShareId,
+		"stoken"	d.stoken,
 		"pdir_fid":     parent,
 		"_size":        strconv.Itoa(size),
 		"_fetch_total": "1",
@@ -70,7 +72,7 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	for {
 		query["_page"] = strconv.Itoa(page)
 		var resp SortResp
-		_, err := d.request("/file/sort", http.MethodGet, func(req *resty.Request) {
+		_, err := d.request("/share/sharepage/detail", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
 		}, &resp)
 		if err != nil {
@@ -85,7 +87,7 @@ func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	return files, nil
 }
 
-func (d *QuarkShare) getStoken() (string, error) {
+func (d *QuarkShare) getStoken() (string) {
 	query := map[string]string{
 		"uc_param_str":     "",
 		"__dt":        "",
