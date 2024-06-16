@@ -88,7 +88,7 @@ func (d *QuarkShare) save(file model.Obj) (string, error) {
 	}
 	for {
 	    query["retry_index"] = strconv.FormatInt(retry, 10)
-	    _, _ := d.request("/task", http.MethodGet, func(req *resty.Request) {
+	    d.request("/task", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
 		}, nil)
 	    
