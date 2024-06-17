@@ -68,7 +68,8 @@ func (d *QuarkShare) save(file model.Obj) (string) {
         "pdir_fid": "0",
         "scene": "link",
 	}
-	fmt.Println("提交数据：", string(json.Marshal(data)))
+	dd, _ := json.Marshal(data)
+	fmt.Println("提交数据：", string(dd))
 	query := map[string]string{
 	    "uc_param_str":     "",
         "__dt": strconv.FormatInt(int64(rand.Float64()*(5-1)+1) * 60 * 1000, 10),
@@ -95,7 +96,8 @@ func (d *QuarkShare) save(file model.Obj) (string) {
 			req.SetQueryParams(query)
 		}, nil)
 		fmt.Println("转存进度原始响应：", string(rsp))
-		fid := utils.Json.Get(rsp, "data", "save_as_top_fids")[0].ToString()
+		fid := utils.Json.Get(rsp, "data", "save_as_top_fids").ToString()
+		fmt.Println("转存fid：", fid)
 		if fid != "" {
 		    return fid
 		}
