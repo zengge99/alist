@@ -114,6 +114,23 @@ func (d *QuarkShare) save(file model.Obj) (string) {
 	return ""
 }
 
+func (d *QuarkShare) delete(fid string) {
+	data := base.Json{
+		"action_type": 2,
+		"filelist": []string{fid},
+		"exclude_fids": []string{},
+	}
+	dd, _ := json.Marshal(data)
+	fmt.Println("提交数据：", string(dd))
+	query := map[string]string{
+	    "uc_param_str":     "",
+	}
+    rsp, _ := d.request("/share/sharepage/save", http.MethodPost, func(req *resty.Request) {
+		req.SetQueryParams(query)
+		req.SetBody(data)
+	}, nil)
+}
+
 func (d *QuarkShare) link(fid string) (*model.Link, error) {
     data := base.Json{
 		"fids": []string{fid},
@@ -142,7 +159,9 @@ func (d *QuarkShare) link(fid string) (*model.Link, error) {
 
 func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
     fid := d.save(file)
-    return d.link(fid)
+	link, err := d.link(fid)
+	d.delete(fid)
+    return link, err
 }
 
 func (d *QuarkShare) MakeDir(ctx context.Context, parentDir model.Obj, dirName string) error {
