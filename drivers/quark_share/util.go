@@ -123,7 +123,7 @@ func (d *QuarkShare) delete(fid string) {
 	}, nil)
 }
 
-func (d *QuarkShare) PreviewLink(file model.Obj, fid string) (*model.Link, error) {
+func (d *QuarkShare) previewLink(file model.Obj, fid string) (*model.Link, error) {
 	data := base.Json{
 		"fid": fid,
 		"resolutions": "normal,low,high,super,2k,4k",
