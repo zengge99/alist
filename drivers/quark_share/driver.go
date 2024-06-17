@@ -60,8 +60,8 @@ func (d *QuarkShare) List(ctx context.Context, dir model.Obj, args model.ListArg
 
 func (d *QuarkShare) save(file model.Obj) (string) {
     data := base.Json{
-		"fid_list": file.GetID(),
-		"fid_token_list": file.(*Object).FidToken,
+		"fid_list": []string{file.GetID()},
+		"fid_token_list": []string{file.(*Object).FidToken},
 		"to_pdir_fid": "0",
         "pwd_id": d.Addition.ShareId,
         "stoken": d.stoken,
@@ -112,7 +112,7 @@ func (d *QuarkShare) save(file model.Obj) (string) {
 
 func (d *QuarkShare) link(fid string) (*model.Link, error) {
     data := base.Json{
-		"fids": fid,
+		"fids": []string{fid},
 	}
 	var resp DownResp
 	ua := d.conf.ua
