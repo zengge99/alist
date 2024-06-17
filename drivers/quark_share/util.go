@@ -129,22 +129,22 @@ func (d *QuarkShare) link(file model.Obj, fid string) (*model.Link, error) {
 		"resolutions": "normal,low,high,super,2k,4k",
 		"supports": "fmp4",
 	}
-	var resp DownResp
+	var resp PreviewResp
 	ua := d.conf.ua
 	r, err := d.request("/file/v2/play", http.MethodPost, func(req *resty.Request) {
 		req.SetHeader("User-Agent", ua).
 			SetBody(data)
-	}, nil)
+	}, &resp)
 	fmt.Println("获取转码响应", file.GetName(), string(r))
 	if err != nil {
 		fmt.Println("获取夸克直链失败", file.GetName(), err)
 		return nil, err
 	}
 
-	fmt.Println("获取夸克直链成功：", file.GetName(), resp.Data[0].DownloadUrl)
+	fmt.Println("获取夸克直链成功：", file.GetName(), resp.Data.VideoListData[0].Url)
 
 	return &model.Link{
-		URL: resp.Data[0].DownloadUrl,
+		URL: resp.Data.VideoListData[0].Url,
 		Header: http.Header{
 			"Cookie":     []string{d.Cookie},
 			"Referer":    []string{d.conf.referer},
