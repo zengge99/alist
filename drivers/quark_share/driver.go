@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
-	"encoding/json"
 
 	"github.com/alist-org/alist/v3/drivers/base"
 	"github.com/alist-org/alist/v3/internal/driver"
@@ -68,8 +67,6 @@ func (d *QuarkShare) save(file model.Obj) (string) {
         "pdir_fid": "0",
         "scene": "link",
 	}
-	dd, _ := json.Marshal(data)
-	fmt.Println("提交数据：", string(dd))
 	query := map[string]string{
 	    "uc_param_str":     "",
         "__dt": strconv.FormatInt(int64(rand.Float64()*(5-1)+1) * 60 * 1000, 10),
@@ -80,7 +77,6 @@ func (d *QuarkShare) save(file model.Obj) (string) {
 		req.SetBody(data)
 	}, nil)
 	taskId := utils.Json.Get(rsp, "data", "task_id").ToString()
-	fmt.Println("转存任务原始响应：", string(rsp))
 	
 	retry := int64(0)
 	query = map[string]string{
@@ -91,18 +87,16 @@ func (d *QuarkShare) save(file model.Obj) (string) {
 	}
 	for {
 	    query["retry_index"] = strconv.FormatInt(retry, 10)
-	    fmt.Println("查询参数：", query)
 		var taskResp TaskResp
 	    rsp, _ := d.request("/task", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
 		}, &taskResp)
-		fmt.Println("转存进度原始响应：", string(rsp))
 		fid := ""
 		if(len(taskResp.Data.SaveAsData.FidList) > 0) {
 			fid = taskResp.Data.SaveAsData.FidList[0]
 		}
-		fmt.Println("转存fid：", fid)
 		if fid != "" {
+			fmt.Println("转存文件成功：", fid, file.GetName())
 		    return fid
 		}
 	    time.Sleep(2 * time.Second)
@@ -111,6 +105,7 @@ func (d *QuarkShare) save(file model.Obj) (string) {
 	        break
 	    }
 	}
+	fmt.Println("转存文件失败：", file.GetName())
 	return ""
 }
 
@@ -127,11 +122,10 @@ func (d *QuarkShare) delete(fid string) {
 		req.SetQueryParams(query)
 		req.SetBody(data)
 	}, nil)
-	fmt.Println("删除数据：", string(rsp))
 }
 
-func (d *QuarkShare) link(fid string) (*model.Link, error) {
-    data := base.Json{
+func (d *QuarkShare) link(file model.Obj, fid string) (*model.Link, error) {
+	data := base.Json{
 		"fids": []string{fid},
 	}
 	var resp DownResp
@@ -141,8 +135,11 @@ func (d *QuarkShare) link(fid string) (*model.Link, error) {
 			SetBody(data)
 	}, &resp)
 	if err != nil {
+		fmt.Println("获取夸克直链失败", file.GetName(), err)
 		return nil, err
 	}
+
+	fmt.Println("获取夸克直链成功：", file.GetName(), resp.Data[0].DownloadUrl)
 
 	return &model.Link{
 		URL: resp.Data[0].DownloadUrl,
@@ -158,7 +155,7 @@ func (d *QuarkShare) link(fid string) (*model.Link, error) {
 
 func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
     fid := d.save(file)
-	link, err := d.link(fid)
+	link, err := d.link(file, fid)
 	d.delete(fid)
     return link, err
 }
