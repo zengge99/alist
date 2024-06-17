@@ -125,6 +125,38 @@ func (d *QuarkShare) delete(fid string) {
 
 func (d *QuarkShare) link(file model.Obj, fid string) (*model.Link, error) {
 	data := base.Json{
+		"fid": fid,
+		"resolutions": "normal,low,high,super,2k,4k",
+		"supports": "fmp4",
+	}
+	var resp DownResp
+	ua := d.conf.ua
+	r, err := d.request("/file/v2/play", http.MethodPost, func(req *resty.Request) {
+		req.SetHeader("User-Agent", ua).
+			SetBody(data)
+	}, &resp)
+	fmt.Println("获取转码响应", file.GetName(), string(r))
+	if err != nil {
+		fmt.Println("获取夸克直链失败", file.GetName(), err)
+		return nil, err
+	}
+
+	fmt.Println("获取夸克直链成功：", file.GetName(), resp.Data[0].DownloadUrl)
+
+	return &model.Link{
+		URL: resp.Data[0].DownloadUrl,
+		Header: http.Header{
+			"Cookie":     []string{d.Cookie},
+			"Referer":    []string{d.conf.referer},
+			"User-Agent": []string{ua},
+		},
+		//Concurrency: 2,
+		//PartSize:    10 * utils.MB,
+	}, nil
+}
+
+func (d *QuarkShare) linkbk(file model.Obj, fid string) (*model.Link, error) {
+	data := base.Json{
 		"fids": []string{fid},
 	}
 	var resp DownResp
