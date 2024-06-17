@@ -24,6 +24,7 @@ type QuarkShare struct {
 	config driver.Config
 	conf   Conf
 	stoken string
+	linkMap map[string]*model.Link
 }
 
 func (d *QuarkShare) Config() driver.Config {
@@ -37,6 +38,7 @@ func (d *QuarkShare) GetAddition() driver.Additional {
 func (d *QuarkShare) Init(ctx context.Context) error {
 	_, err := d.request("/config", http.MethodGet, nil, nil)
 	d.getStoken()
+	linkMap = make(map[string]*model.Link)
 	return err
 }
 
@@ -55,8 +57,14 @@ func (d *QuarkShare) List(ctx context.Context, dir model.Obj, args model.ListArg
 }
 
 func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
+	if cacheLink, ok := d.linkMap[file.GetID()]; ok {
+		return cacheLink, nil
+	}
     fid := d.save(file)
 	link, err := d.link(file, fid)
+	if err == nil {
+		linkMap[file.GetID()] = link
+	}
 	d.delete(fid)
     return link, err
 }
