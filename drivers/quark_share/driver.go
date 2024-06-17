@@ -88,7 +88,7 @@ func (d *QuarkShare) save(file model.Obj) (string) {
 	for {
 	    query["retry_index"] = strconv.FormatInt(retry, 10)
 		var taskResp TaskResp
-	    rsp, _ := d.request("/task", http.MethodGet, func(req *resty.Request) {
+	    d.request("/task", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
 		}, &taskResp)
 		fid := ""
@@ -118,7 +118,7 @@ func (d *QuarkShare) delete(fid string) {
 	query := map[string]string{
 	    "uc_param_str":     "",
 	}
-    rsp, _ := d.request("/file/delete", http.MethodPost, func(req *resty.Request) {
+    d.request("/file/delete", http.MethodPost, func(req *resty.Request) {
 		req.SetQueryParams(query)
 		req.SetBody(data)
 	}, nil)
