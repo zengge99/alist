@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+	"encoding/json"
 
 	"github.com/alist-org/alist/v3/drivers/base"
 	"github.com/alist-org/alist/v3/internal/driver"
@@ -57,7 +58,7 @@ func (d *QuarkShare) List(ctx context.Context, dir model.Obj, args model.ListArg
 	})
 }
 
-func (d *QuarkShare) save(file model.Obj) (string, error) {
+func (d *QuarkShare) save(file model.Obj) (string) {
     data := base.Json{
 		"fid_list": file.GetID(),
 		"fid_token_list": file.(*Object).FidToken,
@@ -67,6 +68,7 @@ func (d *QuarkShare) save(file model.Obj) (string, error) {
         "pdir_fid": "0",
         "scene": "link",
 	}
+	fmt.Println("提交数据：", string(json.Marshal(data)))
 	query := map[string]string{
 	    "uc_param_str":     "",
         "__dt": strconv.FormatInt(int64(rand.Float64()*(5-1)+1) * 60 * 1000, 10),
@@ -77,7 +79,7 @@ func (d *QuarkShare) save(file model.Obj) (string, error) {
 		req.SetBody(data)
 	}, nil)
 	taskId := utils.Json.Get(rsp, "data", "task_id").ToString()
-	fmt.Println("原始响应：", string(rsp))
+	fmt.Println("转存任务原始响应：", string(rsp))
 	
 	retry := int64(0)
 	query = map[string]string{
@@ -88,17 +90,22 @@ func (d *QuarkShare) save(file model.Obj) (string, error) {
 	}
 	for {
 	    query["retry_index"] = strconv.FormatInt(retry, 10)
-	    d.request("/task", http.MethodGet, func(req *resty.Request) {
+	    fmt.Println("查询参数：", query)
+	    rsp, _ := d.request("/task", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
 		}, nil)
-	    
+		fmt.Println("转存进度原始响应：", string(rsp))
+		fid := utils.Json.Get(rsp, "data", "save_as_top_fids")[0].ToString()
+		if fid != "" {
+		    return fid
+		}
 	    time.Sleep(2 * time.Second)
 	    retry++
 	    if retry > 3 {
 	        break
 	    }
 	}
-	return "", nil
+	return ""
 }
 
 func (d *QuarkShare) link(fid string) (*model.Link, error) {
