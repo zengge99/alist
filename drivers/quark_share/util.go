@@ -134,7 +134,7 @@ func (d *QuarkShare) link(file model.Obj, fid string) (*model.Link, error) {
 	r, err := d.request("/file/v2/play", http.MethodPost, func(req *resty.Request) {
 		req.SetHeader("User-Agent", ua).
 			SetBody(data)
-	}, &resp)
+	}, nil)
 	fmt.Println("获取转码响应", file.GetName(), string(r))
 	if err != nil {
 		fmt.Println("获取夸克直链失败", file.GetName(), err)
