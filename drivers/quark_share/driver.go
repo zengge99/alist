@@ -120,15 +120,14 @@ func (d *QuarkShare) delete(fid string) {
 		"filelist": []string{fid},
 		"exclude_fids": []string{},
 	}
-	dd, _ := json.Marshal(data)
-	fmt.Println("提交数据：", string(dd))
 	query := map[string]string{
 	    "uc_param_str":     "",
 	}
-    rsp, _ := d.request("/share/sharepage/save", http.MethodPost, func(req *resty.Request) {
+    rsp, _ := d.request("/file/delete", http.MethodPost, func(req *resty.Request) {
 		req.SetQueryParams(query)
 		req.SetBody(data)
 	}, nil)
+	fmt.Println("删除数据：", string(rsp))
 }
 
 func (d *QuarkShare) link(fid string) (*model.Link, error) {
