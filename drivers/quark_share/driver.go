@@ -38,7 +38,7 @@ func (d *QuarkShare) GetAddition() driver.Additional {
 func (d *QuarkShare) Init(ctx context.Context) error {
 	_, err := d.request("/config", http.MethodGet, nil, nil)
 	d.getStoken()
-	linkMap = make(map[string]*model.Link)
+	d.linkMap = make(map[string]*model.Link)
 	return err
 }
 
@@ -63,7 +63,7 @@ func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkAr
     fid := d.save(file)
 	link, err := d.link(file, fid)
 	if err == nil {
-		linkMap[file.GetID()] = link
+		d.linkMap[file.GetID()] = link
 	}
 	d.delete(fid)
     return link, err
