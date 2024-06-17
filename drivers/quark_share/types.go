@@ -1,4 +1,4 @@
- package quarkShare
+package quarkShare
 
 import (
 	"time"
@@ -96,6 +96,17 @@ type TaskResp struct {
 	} `json:"data"`
 }
 
+type VideoList struct {
+	Url string `json:"url"`
+}
+
+type PreviewResp struct {
+	Resp
+	Data struct {
+		VideoListData []VideoList `json:"video_list"`
+	} `json:"data"`
+}
+
 type DownResp struct {
 	Resp
 	Data []struct {
@@ -180,3 +191,5 @@ type UpAuthResp struct {
 	Metadata struct {
 	} `json:"metadata"`
 }
+
+
