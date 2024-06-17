@@ -2,10 +2,10 @@ package quarkShare
 
 import (
 	"context"
-	"crypto/md5"
-	"crypto/sha1"
-	"encoding/hex"
-	"io"
+	//"crypto/md5"
+	//"crypto/sha1"
+	//"encoding/hex"
+	//"io"
 	"net/http"
 	"time"
 
@@ -15,7 +15,7 @@ import (
 	"github.com/alist-org/alist/v3/internal/model"
 	"github.com/alist-org/alist/v3/pkg/utils"
 	"github.com/go-resty/resty/v2"
-	log "github.com/sirupsen/logrus"
+	//log "github.com/sirupsen/logrus"
 )
 
 type QuarkShare struct {
