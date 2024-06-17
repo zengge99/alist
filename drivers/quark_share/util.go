@@ -144,7 +144,7 @@ func (d *QuarkShare) previewLink(file model.Obj, fid string) (*model.Link, error
 	url := ""
 	resolution := ""
 	for _, value := range resp.Data.VideoListData {
-        if value != nil && value.Info.Url != "" {
+        if value.Info.Url != "" {
             url = value.Info.Url
             resolution = value.Resolution
             break
