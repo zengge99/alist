@@ -140,11 +140,20 @@ func (d *QuarkShare) previewLink(file model.Obj, fid string) (*model.Link, error
 		fmt.Println("获取夸克直链失败", file.GetName(), err)
 		return nil, err
 	}
-
-	fmt.Println("获取夸克直链成功：", file.GetName(), resp.Data.VideoListData[0].Url)
+	
+	url := ""
+	resolution := ""
+	for _, value := range resp.Data.VideoListData {
+        if value.Url != "" {
+            url = value.Url
+            resolution = value.Resolution
+            break
+        }
+	}
+	fmt.Println("获取夸克直链成功：", file.GetName(), url, "分辨率：", resolution)
 
 	return &model.Link{
-		URL: resp.Data.VideoListData[0].Url,
+		URL: url,
 		Header: http.Header{
 			"Cookie":     []string{d.Cookie},
 			"Referer":    []string{d.conf.referer},
