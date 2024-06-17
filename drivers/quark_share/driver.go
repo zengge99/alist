@@ -92,11 +92,15 @@ func (d *QuarkShare) save(file model.Obj) (string) {
 	for {
 	    query["retry_index"] = strconv.FormatInt(retry, 10)
 	    fmt.Println("查询参数：", query)
+		var taskResp TaskResp
 	    rsp, _ := d.request("/task", http.MethodGet, func(req *resty.Request) {
 			req.SetQueryParams(query)
-		}, nil)
+		}, &taskResp)
 		fmt.Println("转存进度原始响应：", string(rsp))
-		fid := utils.Json.Get(rsp, "data", "save_as_top_fids").ToString()
+		fid := ""
+		if(len(taskResp.Data.SaveAsData.FidList) > 0) {
+			fid = taskResp.Data.SaveAsData.FidList[0]
+		}
 		fmt.Println("转存fid：", fid)
 		if fid != "" {
 		    return fid
@@ -137,10 +141,8 @@ func (d *QuarkShare) link(fid string) (*model.Link, error) {
 }
 
 func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
-    d.save(file)
-    
-    
-    return d.link(file.GetID())
+    fid := d.save(file)
+    return d.link(fid)
 }
 
 func (d *QuarkShare) MakeDir(ctx context.Context, parentDir model.Obj, dirName string) error {
