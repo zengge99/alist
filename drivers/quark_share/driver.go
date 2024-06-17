@@ -126,6 +126,7 @@ func (d *QuarkShare) Remove(ctx context.Context, obj model.Obj) error {
 }
 
 func (d *QuarkShare) Put(ctx context.Context, dstDir model.Obj, stream model.FileStreamer, up driver.UpdateProgress) error {
+	/*
 	tempFile, err := stream.CacheFullInTempFile()
 	if err != nil {
 		return err
@@ -207,6 +208,8 @@ func (d *QuarkShare) Put(ctx context.Context, dstDir model.Obj, stream model.Fil
 		return err
 	}
 	return d.upFinish(pre)
+ */
+	return nil
 }
 
 var _ driver.Driver = (*QuarkShare)(nil)
