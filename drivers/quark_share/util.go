@@ -55,6 +55,102 @@ func (d *QuarkShare) request(pathname string, method string, callback base.ReqCa
 	return res.Body(), nil
 }
 
+func (d *QuarkShare) save(file model.Obj) (string) {
+    data := base.Json{
+		"fid_list": []string{file.GetID()},
+		"fid_token_list": []string{file.(*Object).FidToken},
+		"to_pdir_fid": "0",
+        "pwd_id": d.Addition.ShareId,
+        "stoken": d.stoken,
+        "pdir_fid": "0",
+        "scene": "link",
+	}
+	query := map[string]string{
+	    "uc_param_str":     "",
+        "__dt": strconv.FormatInt(int64(rand.Float64()*(5-1)+1) * 60 * 1000, 10),
+        "__t":  strconv.FormatInt(time.Now().UnixNano()/1000000, 10),
+	}
+    rsp, _ := d.request("/share/sharepage/save", http.MethodPost, func(req *resty.Request) {
+		req.SetQueryParams(query)
+		req.SetBody(data)
+	}, nil)
+	taskId := utils.Json.Get(rsp, "data", "task_id").ToString()
+	
+	retry := int64(0)
+	query = map[string]string{
+	   "uc_param_str":     "",
+	   "task_id": taskId,
+        "__dt": strconv.FormatInt(int64(rand.Float64()*(5-1)+1) * 60 * 1000, 10),
+        "__t":  strconv.FormatInt(time.Now().UnixNano()/1000000, 10),
+	}
+	for {
+	    query["retry_index"] = strconv.FormatInt(retry, 10)
+		var taskResp TaskResp
+	    d.request("/task", http.MethodGet, func(req *resty.Request) {
+			req.SetQueryParams(query)
+		}, &taskResp)
+		fid := ""
+		if(len(taskResp.Data.SaveAsData.FidList) > 0) {
+			fid = taskResp.Data.SaveAsData.FidList[0]
+		}
+		if fid != "" {
+			fmt.Println("转存文件成功：", fid, file.GetName())
+		    return fid
+		}
+	    time.Sleep(2 * time.Second)
+	    retry++
+	    if retry > 3 {
+	        break
+	    }
+	}
+	fmt.Println("转存文件失败：", file.GetName())
+	return ""
+}
+
+func (d *QuarkShare) delete(fid string) {
+	data := base.Json{
+		"action_type": 2,
+		"filelist": []string{fid},
+		"exclude_fids": []string{},
+	}
+	query := map[string]string{
+	    "uc_param_str":     "",
+	}
+    d.request("/file/delete", http.MethodPost, func(req *resty.Request) {
+		req.SetQueryParams(query)
+		req.SetBody(data)
+	}, nil)
+}
+
+func (d *QuarkShare) link(file model.Obj, fid string) (*model.Link, error) {
+	data := base.Json{
+		"fids": []string{fid},
+	}
+	var resp DownResp
+	ua := d.conf.ua
+	_, err := d.request("/file/download", http.MethodPost, func(req *resty.Request) {
+		req.SetHeader("User-Agent", ua).
+			SetBody(data)
+	}, &resp)
+	if err != nil {
+		fmt.Println("获取夸克直链失败", file.GetName(), err)
+		return nil, err
+	}
+
+	fmt.Println("获取夸克直链成功：", file.GetName(), resp.Data[0].DownloadUrl)
+
+	return &model.Link{
+		URL: resp.Data[0].DownloadUrl,
+		Header: http.Header{
+			"Cookie":     []string{d.Cookie},
+			"Referer":    []string{d.conf.referer},
+			"User-Agent": []string{ua},
+		},
+		//Concurrency: 2,
+		//PartSize:    10 * utils.MB,
+	}, nil
+}
+
 func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
 	files := make([]File, 0)
 	page := 1
