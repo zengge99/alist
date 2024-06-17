@@ -97,7 +97,10 @@ type TaskResp struct {
 }
 
 type VideoList struct {
-	Url string `json:"url"`
+    Resolution string `json:"resolution"`
+	Info struct {
+	    Url string `json:"url"`
+	} `json:"video_info"`
 }
 
 type PreviewResp struct {
