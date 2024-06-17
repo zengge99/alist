@@ -11,6 +11,7 @@ type Addition struct {
 	OrderBy        string `json:"order_by" type:"select" options:"none,file_type,file_name,updated_at" default:"none"`
 	OrderDirection string `json:"order_direction" type:"select" options:"asc,desc" default:"asc"`
 	ShareId	string `json:"share_id" type:"text" required:"true" help:"quark share id"`
+	PassCode	string `json:"pass_code" type:"text" default:"" help:"quark share passcode"`
 }
 
 type Conf struct {
