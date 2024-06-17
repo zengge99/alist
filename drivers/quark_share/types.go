@@ -85,6 +85,17 @@ type SortResp struct {
 	} `json:"metadata"`
 }
 
+type SaveAs struct {
+	FidList []string `json:"save_as_top_fids"`
+}
+
+type TaskResp struct {
+	Resp
+	Data struct {
+		SaveAsData SaveAs `json:"save_as"`
+	} `json:"data"`
+}
+
 type DownResp struct {
 	Resp
 	Data []struct {
