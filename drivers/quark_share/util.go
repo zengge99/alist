@@ -131,11 +131,10 @@ func (d *QuarkShare) previewLink(file model.Obj, fid string) (*model.Link, error
 	}
 	var resp PreviewResp
 	ua := d.conf.ua
-	r, err := d.request("/file/v2/play", http.MethodPost, func(req *resty.Request) {
+	_, err := d.request("/file/v2/play", http.MethodPost, func(req *resty.Request) {
 		req.SetHeader("User-Agent", ua).
 			SetBody(data)
 	}, &resp)
-	fmt.Println("获取转码响应", file.GetName(), string(r))
 	if err != nil {
 		fmt.Println("获取夸克直链失败", file.GetName(), err)
 		return nil, err
