@@ -26,7 +26,7 @@ func init() {
 		return &QuarkShare{
 			config: driver.Config{
 				Name:              "QuarkShare",
-				OnlyLocal:         true,
+				//OnlyLocal:         true,
 				DefaultRoot:       "0",
 				NoOverwriteUpload: true,
 			},
