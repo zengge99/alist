@@ -157,7 +157,6 @@ func (d *QuarkShare) previewLink(file model.Obj, fid string) (*model.Link, error
 			"Cookie":     []string{d.Cookie},
 			"Referer":    []string{d.conf.referer},
 			"User-Agent": []string{ua},
-			"Set-Cookie":     []string{d.Cookie},
 		},
 		//Concurrency: 2,
 		//PartSize:    10 * utils.MB,
