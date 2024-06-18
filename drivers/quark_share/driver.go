@@ -16,6 +16,7 @@ import (
 	"github.com/alist-org/alist/v3/pkg/utils"
 	"github.com/go-resty/resty/v2"
 	//log "github.com/sirupsen/logrus"
+	"github.com/alist-org/alist/v3/pkg/cron"
 )
 
 type QuarkShare struct {
@@ -25,6 +26,7 @@ type QuarkShare struct {
 	conf   Conf
 	stoken string
 	linkMap map[string]*model.Link
+	cron   *cron.Cron
 }
 
 func (d *QuarkShare) Config() driver.Config {
@@ -39,10 +41,17 @@ func (d *QuarkShare) Init(ctx context.Context) error {
 	_, err := d.request("/config", http.MethodGet, nil, nil)
 	d.getStoken()
 	d.linkMap = make(map[string]*model.Link)
+	d.cron = cron.NewCron(time.Hour * 2)
+	d.cron.Do(func() {
+		d.getStoken()
+	})
 	return err
 }
 
 func (d *QuarkShare) Drop(ctx context.Context) error {
+    if d.cron != nil { 
+        d.cron.Stop() 
+    }	
 	return nil
 }
 
