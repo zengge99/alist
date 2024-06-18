@@ -8,6 +8,7 @@ import (
 	//"io"
 	"net/http"
 	"time"
+	"fmt"
 
 	"github.com/alist-org/alist/v3/drivers/base"
 	"github.com/alist-org/alist/v3/internal/driver"
@@ -39,11 +40,21 @@ func (d *QuarkShare) GetAddition() driver.Additional {
 
 func (d *QuarkShare) Init(ctx context.Context) error {
 	_, err := d.request("/config", http.MethodGet, nil, nil)
-	d.getStoken()
+	stoken := d.getStoken()
+	if stoken == "" {
+		fmt.Println("刷新夸克分享令牌失败")
+	} else {
+		fmt.Println("刷新夸克分享令牌成功：", stoken)
+	}
 	d.linkMap = make(map[string]*model.Link)
 	d.cron = cron.NewCron(time.Hour * 2)
 	d.cron.Do(func() {
-		d.getStoken()
+		stoken := d.getStoken()
+		if stoken == "" {
+			fmt.Println("刷新夸克分享令牌失败")
+		} else {
+			fmt.Println("刷新夸克分享令牌成功：", stoken)
+		}
 	})
 	return err
 }
