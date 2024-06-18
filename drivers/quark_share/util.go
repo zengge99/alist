@@ -158,8 +158,8 @@ func (d *QuarkShare) previewLink(file model.Obj, fid string) (*model.Link, error
 			"Referer":    []string{d.conf.referer},
 			"User-Agent": []string{ua},
 		},
-		Concurrency: 2,
-		PartSize:    10 * utils.MB,
+		//Concurrency: 2,
+		//PartSize:    10 * utils.MB,
 	}, nil
 }
 
@@ -187,8 +187,8 @@ func (d *QuarkShare) link(file model.Obj, fid string) (*model.Link, error) {
 			"Referer":    []string{d.conf.referer},
 			"User-Agent": []string{ua},
 		},
-		//Concurrency: 2,
-		//PartSize:    10 * utils.MB,
+		Concurrency: 2,
+		PartSize:    10 * utils.MB,
 	}, nil
 }
 
