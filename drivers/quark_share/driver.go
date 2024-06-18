@@ -81,7 +81,7 @@ func (d *QuarkShare) Link(ctx context.Context, file model.Obj, args model.LinkAr
 		return cacheLink, nil
 	}
     fid := d.save(file)
-	link, err := d.previewLink(file, fid)
+	link, err := d.link(file, fid)
 	if err == nil {
 		d.linkMap[file.GetID()] = link
 	}
