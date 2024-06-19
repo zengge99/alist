@@ -28,6 +28,7 @@ type QuarkShare struct {
 	stoken string
 	linkMap map[string]*model.Link
 	cron   *cron.Cron
+	nameDict map[string]string
 }
 
 func (d *QuarkShare) Config() driver.Config {
@@ -57,6 +58,7 @@ func (d *QuarkShare) Init(ctx context.Context) error {
 		}
 		d.linkMap = make(map[string]*model.Link)
 	})
+	d.makeNameDict()
 	return err
 }
 
