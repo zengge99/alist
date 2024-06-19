@@ -55,6 +55,7 @@ func (d *QuarkShare) Init(ctx context.Context) error {
 		} else {
 			fmt.Println("刷新夸克分享令牌成功：", stoken)
 		}
+		d.linkMap = make(map[string]*model.Link)
 	})
 	return err
 }
