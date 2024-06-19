@@ -58,7 +58,7 @@ func fileToObj(f File) *model.Object {
 }
 */
 
-func fileToObj(f File) *Object {
+func fileToObj(f File, d *QuarkShare) *Object {
     fileName := f.FileName
     if newName, ok := d.nameDict[f.FileName]; ok {
 		fileName = newName
