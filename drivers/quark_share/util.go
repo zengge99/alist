@@ -204,7 +204,6 @@ func (d *QuarkShare) makeNameDict() {
         }
     }()
     if err != nil {
-        fmt.Println("读取名字字典失败", err)
         return
     }
 	scanner := bufio.NewScanner(file)
