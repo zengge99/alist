@@ -196,7 +196,7 @@ func (d *QuarkShare) link(file model.Obj, fid string) (*model.Link, error) {
 
 func (d *QuarkShare) makeNameDict() {
     d.nameDict = make(map[string]string)
-    file, err := os.OpenFile("/opt/alist/data/quark_name_dict.txt", O_RDONLY, 0644)
+    file, err := os.OpenFile("/opt/alist/data/quark_name_dict.txt", O_RDWR, 0644)
 	defer func() {
         if err == nil {
             file.Close()
