@@ -75,7 +75,7 @@ func (d *QuarkShare) List(ctx context.Context, dir model.Obj, args model.ListArg
 		return nil, err
 	}
 	return utils.SliceConvert(files, func(src File) (model.Obj, error) {
-		return fileToObj(src), nil
+		return fileToObj(src, d), nil
 	})
 }
 
