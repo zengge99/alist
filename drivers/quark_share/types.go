@@ -59,10 +59,14 @@ func fileToObj(f File) *model.Object {
 */
 
 func fileToObj(f File) *Object {
+    fileName := f.FileName
+    if newName, ok := d.nameDict[f.FileName]; ok {
+		fileName = newName
+	}
 	return &Object{
 		Object: model.Object{
 		    ID:       f.Fid,
-		    Name:     f.FileName,
+		    Name:     fileName,
 		    Size:     f.Size,
 		    Modified: time.UnixMilli(f.UpdatedAt),
 		    IsFolder: !f.File,
