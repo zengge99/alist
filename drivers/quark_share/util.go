@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 	"math/rand"
+	"os"
 
 	"github.com/alist-org/alist/v3/drivers/base"
 	"github.com/alist-org/alist/v3/internal/model"
@@ -190,6 +191,26 @@ func (d *QuarkShare) link(file model.Obj, fid string) (*model.Link, error) {
 		Concurrency: 2,
 		PartSize:    10 * utils.MB,
 	}, nil
+}
+
+func (d *QuarkShare) makeNameDict() {
+    d.nameDict = make(map[string]string)
+    file, err := os.OpenFile("/opt/alist/data/quark_name_dict.txt", O_RDONLY, 0644)
+	defer func() {
+        if err == nil {
+            file.Close()
+        }
+    }()
+    if err != nil {
+        fmt.Println("读取名字字典失败", err)
+        return
+    }
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		parts := strings.SplitN(line, ":", 2)
+		d.nameDict[parts[0]] = parts[1]
+	}
 }
 
 func (d *QuarkShare) GetFiles(parent string) ([]File, error) {
