@@ -306,7 +306,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	}
 
 	d.FileID_Link_model[file_id] = link
-	
+
 	go func() {
         time.Sleep(2 * time.Second)
 		if files, err := d.client.List(d.DirId); err == nil && d.PurgePan115Temp {
@@ -624,7 +624,6 @@ func (d *AliyundriveShare2Pan115) rapidUpload(fileSize int64, fileName, dirID, p
 		}
 		if result.Status == 7 {
 			// Update signKey & signVal
-			fmt.Println("要求再次上传sha1")
 			signKey = result.SignKey
 			signVal, err = UploadDigestRange(linkUrl, result.SignCheck)
 			if err != nil {
