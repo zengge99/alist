@@ -255,7 +255,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		}, nil
 	} 
 
-	time.Sleep(2 * 1000 * time.Millisecond)
+	//time.Sleep(2 * 1000 * time.Millisecond)
 	DownloadUrl, ContentHash, fileSize, err := d.GetmyLink(ctx, new_file_id, file_name)
 	if err != nil {
 		fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"获取转存后的直链失败！！！",err)
@@ -289,22 +289,24 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		return link, nil
 	}
 
-	time.Sleep(1000 * time.Millisecond)
-
-	var userAgent = args.Header.Get("User-Agent")
-	downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
-	if err != nil {
-		fmt.Println("[Debug] DownloadWithUA failed")
-		return link, nil
+	success := false
+	for i := 0; i < 3; i++ {
+		var userAgent = args.Header.Get("User-Agent")
+		downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
+		if err != nil {
+			time.Sleep(200 * time.Millisecond)
+			continue
+		}
+		success = true
+		d.pickCodeMap[file_id] = fastInfo.PickCode
+		fmt.Println("获取到115下载新链接：", downloadInfo.Url.Url)
+		link = &model.Link{
+			URL:    downloadInfo.Url.Url,
+			Header: downloadInfo.Header,
+		}
+		break
 	}
 
-    d.pickCodeMap[file_id] = fastInfo.PickCode
-	fmt.Println("获取到115下载新链接：", downloadInfo.Url.Url)
-
-	link = &model.Link{
-		URL:    downloadInfo.Url.Url,
-		Header: downloadInfo.Header,
-	}
 	if files, err := d.client.List(d.DirId); err == nil && d.PurgePan115Temp {
 		for i := 0; i < len(*files); i++ {
 			file := (*files)[i]
@@ -314,8 +316,12 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		}
 	}
 
+	if !success {
+		fmt.Println("[Debug] DownloadWithUA failed")
+		return link, nil
+	}
+	
 	d.FileID_Link_model[file_id] = link
-
 	return link, nil
 }
 
