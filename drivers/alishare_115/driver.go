@@ -300,21 +300,25 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		break
 	}
 
-	if files, err := d.client.List(d.DirId); err == nil && d.PurgePan115Temp {
-		for i := 0; i < len(*files); i++ {
-			file := (*files)[i]
-			if file.Name == file_name && strings.ToUpper(file.Sha1) == fullHash{
-				d.client.Delete(file.FileID)
-			}
-		}
-	}
-
 	if !success {
 		fmt.Println("[Debug] DownloadWithUA failed")
 		return link, nil
 	}
 
 	d.FileID_Link_model[file_id] = link
+	
+	go func() {
+        time.Sleep(2 * time.Second)
+		if files, err := d.client.List(d.DirId); err == nil && d.PurgePan115Temp {
+			for i := 0; i < len(*files); i++ {
+				file := (*files)[i]
+				if file.Name == file_name && strings.ToUpper(file.Sha1) == fullHash{
+					d.client.Delete(file.FileID)
+				}
+			}
+		}
+    }()
+
 	return link, nil
 }
 
