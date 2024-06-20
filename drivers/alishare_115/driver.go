@@ -257,10 +257,6 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		d.FileID_Link[file_id] = DownloadUrl
 	}	
 
-	if d.PurgeAliTemp{
-		d.Purge_temp_folder(ctx)
-	}
-
 	link := &model.Link{
 		Header: http.Header{
 			"Referer": []string{"https://www.aliyundrive.com/"},
@@ -309,6 +305,9 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 					d.client.Delete(file.FileID)
 				}
 			}
+		}
+		if d.PurgeAliTemp{
+			d.Purge_temp_folder(ctx)
 		}
     }()
 
