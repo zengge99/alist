@@ -283,7 +283,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	}
 
 	success := false
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 5; i++ {
 		var userAgent = args.Header.Get("User-Agent")
 		downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
 		if err != nil {
