@@ -300,13 +300,6 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		break
 	}
 
-	if !success {
-		fmt.Println("[Debug] DownloadWithUA failed")
-		return link, nil
-	}
-
-	d.FileID_Link_model[file_id] = link
-
 	go func() {
         time.Sleep(2 * time.Second)
 		if files, err := d.client.List(d.DirId); err == nil && d.PurgePan115Temp {
@@ -318,6 +311,13 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 			}
 		}
     }()
+
+	if !success {
+		fmt.Println("[Debug] DownloadWithUA failed")
+		return link, nil
+	}
+
+	d.FileID_Link_model[file_id] = link
 
 	return link, nil
 }
