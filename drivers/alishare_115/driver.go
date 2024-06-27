@@ -265,6 +265,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	}
 
 	//甲骨文等海外环境，115 API可能临时被block导致超时，3秒未响应则强制返回阿里直链
+	fullHash := "123"
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second) 
     defer cancel() 
     done := make(chan struct{})
@@ -276,7 +277,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		}
 		
         preHash := "2EF7BDE608CE5404E97D5F042F95F89F1C232871"
-		fullHash := ContentHash
+		fullHash = ContentHash
 
 		var fastInfo *driver115.UploadInitResp
 		if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, link.URL); err != nil {
