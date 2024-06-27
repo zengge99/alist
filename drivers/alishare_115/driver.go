@@ -269,32 +269,45 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		return link, nil
 	}
 
-	preHash := "2EF7BDE608CE5404E97D5F042F95F89F1C232871"
-	fullHash := ContentHash
+	//甲骨文等海外环境，115 API可能临时被block导致超时，3秒未响应则强制返回阿里直链
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second) 
+    defer cancel() 
+    done := make(chan struct{})
+    go func() {
+        preHash := "2EF7BDE608CE5404E97D5F042F95F89F1C232871"
+		fullHash := ContentHash
 
-	var fastInfo *driver115.UploadInitResp
-	if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, link.URL); err != nil {
-		fmt.Println("[Debug] rapidUpload failed")
-		return link, nil
-	}
+		var fastInfo *driver115.UploadInitResp
+		if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, link.URL); err != nil {
+			fmt.Println("[Debug] rapidUpload failed")
+			return link, nil
+		}
 
-	success := false
-	for i := 0; i < 5; i++ {
-		var userAgent = args.Header.Get("User-Agent")
-		downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
-		if err != nil {
-			time.Sleep(200 * time.Millisecond)
-			continue
+		success := false
+		for i := 0; i < 5; i++ {
+			var userAgent = args.Header.Get("User-Agent")
+			downloadInfo, err := d.client.DownloadWithUA(fastInfo.PickCode, userAgent)
+			if err != nil {
+				time.Sleep(200 * time.Millisecond)
+				continue
+			}
+			success = true
+			d.pickCodeMap[file_id] = fastInfo.PickCode
+			fmt.Println("获取到115下载新链接：", downloadInfo.Url.Url)
+			link = &model.Link{
+				URL:    downloadInfo.Url.Url,
+				Header: downloadInfo.Header,
+			}
+			break
 		}
-		success = true
-		d.pickCodeMap[file_id] = fastInfo.PickCode
-		fmt.Println("获取到115下载新链接：", downloadInfo.Url.Url)
-		link = &model.Link{
-			URL:    downloadInfo.Url.Url,
-			Header: downloadInfo.Header,
-		}
-		break
-	}
+        close(done)
+    }()
+
+    select {
+		case <-ctx.Done():
+			fmt.Println("[Debug]访问115 API超时，可能是网络问题")
+		case <-done:
+    }
 
 	go func() {
         time.Sleep(2 * time.Second)
