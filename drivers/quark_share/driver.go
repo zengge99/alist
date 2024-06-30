@@ -148,4 +148,18 @@ func (d *QuarkShare) Remove(ctx context.Context, obj model.Obj) error {
 	return err
 }
 
+func (d *QuarkShare) Other(ctx context.Context, args model.OtherArgs) (interface{}, error) {
+	switch args.Method {
+	case "video_download":
+		var resp base.Json
+		fid := d.save(file)
+		link, _ := link(fid, args.Obj.GetID())
+		resp["download_link"] = link.URL
+		resp["cookie"] = d.Cookie
+		return resp, nil
+	default:
+		return nil, errs.NotSupport
+	}
+}
+
 var _ driver.Driver = (*QuarkShare)(nil)
