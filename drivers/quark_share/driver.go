@@ -151,7 +151,11 @@ func (d *QuarkShare) Remove(ctx context.Context, obj model.Obj) error {
 func (d *QuarkShare) Other(ctx context.Context, args model.OtherArgs) (interface{}, error) {
 	switch args.Method {
 	case "video_download":
-		var resp base.Json{}
+		var resp base.Json{
+			"download_link": "",
+			"cookie": "",
+			"file_id":  "",
+		}
 		file := args.Obj
 		fid := d.save(file)
 		link, err := d.link(file, fid)
