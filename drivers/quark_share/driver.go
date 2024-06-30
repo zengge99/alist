@@ -152,8 +152,9 @@ func (d *QuarkShare) Other(ctx context.Context, args model.OtherArgs) (interface
 	switch args.Method {
 	case "video_download":
 		var resp base.Json
+		file := args.Obj
 		fid := d.save(file)
-		link, err := link(fid, args.Obj.GetID())
+		link, err := link(file, fid)
 		resp["download_link"] = link.URL
 		resp["cookie"] = d.Cookie
 		return resp, err
