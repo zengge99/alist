@@ -154,7 +154,7 @@ func (d *QuarkShare) Other(ctx context.Context, args model.OtherArgs) (interface
 		var resp base.Json
 		file := args.Obj
 		fid := d.save(file)
-		link, err := link(file, fid)
+		link, err := d.link(file, fid)
 		resp["download_link"] = link.URL
 		resp["cookie"] = d.Cookie
 		return resp, err
