@@ -498,11 +498,12 @@ func (d *AliyundriveShare2Pan115) login() error {
 	}
 	d.client.ImportCredential(cr)
 	
-	userInfo, _ := d.client.GetUser()
-	fmt.Println("115 VIP：",userInfo.Vip)
 	if userInfo, err := d.client.GetUser(); err == nil {
 	    if userInfo.Vip == 0 {
 	        fmt.Println("非115会员不能使用该功能！")
+	        //倒一个假cookie进去,免得其他代码到处修改
+	        cr.FromCookie("UID=364111111_F1_1720052222;CID=e185b42a79b1f19174333394d01bd65b;SEID=48f5f117458a9f763840995a48529166606012bea33a75bb79c93669a5dce58ccce9c18c5d9a943a4253967b9b7458d95b0e9bd311cc67d8ffbeecca")
+	        d.client.ImportCredential(cr)
 	        return errors.New("非115会员不能使用该功能！")
 	    }
 	}
