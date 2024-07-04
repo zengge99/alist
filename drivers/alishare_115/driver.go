@@ -498,7 +498,7 @@ func (d *AliyundriveShare2Pan115) login() error {
 	}
 	d.client.ImportCredential(cr)
 	
-	userInfo := d.client.GetUser()
+	userInfo, _ := d.client.GetUser()
 	fmt.Println("115 VIP：",userInfo.Vip)
 	
 	return d.client.LoginCheck()
