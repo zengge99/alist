@@ -500,6 +500,12 @@ func (d *AliyundriveShare2Pan115) login() error {
 	
 	userInfo, _ := d.client.GetUser()
 	fmt.Println("115 VIP：",userInfo.Vip)
+	if userInfo, err := d.client.GetUser(); err == nil {
+	    if userInfo.Vip == 0 {
+	        fmt.Println("非115会员不能使用该功能！")
+	        return errors.New("非115会员不能使用该功能！")
+	    }
+	}
 	
 	return d.client.LoginCheck()
 }
