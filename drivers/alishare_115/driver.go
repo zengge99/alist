@@ -497,7 +497,10 @@ func (d *AliyundriveShare2Pan115) login() error {
 		return errors.Wrap(err, "failed to login by cookies")
 	}
 	d.client.ImportCredential(cr)
-
+	
+	userInfo := d.client.GetUser()
+	fmt.Println("115 VIP：",userInfo.Vip)
+	
 	return d.client.LoginCheck()
 }
 
