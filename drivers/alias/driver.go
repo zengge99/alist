@@ -143,9 +143,9 @@ func (d *Alias) Other(ctx context.Context, args model.OtherArgs) (interface{}, e
 		return fs.Other(ctx, args)
 	}
 	if errs.IsNotImplement(err) {
-		return errors.New("same-name files cannot be Rename")
+		return errors.New("same-name files cannot be Rename"), nil
 	}
-	return err
+	return err, nil
 }
 
 var _ driver.Driver = (*Alias)(nil)
