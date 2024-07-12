@@ -140,7 +140,11 @@ func (d *Alias) Remove(ctx context.Context, obj model.Obj) error {
 func (d *Alias) Other(ctx context.Context, args model.OtherArgs) (interface{}, error) {
 	reqPath, err := d.getReqPath(ctx, args.Obj)
 	if err == nil {
-		return fs.Other(ctx, args)
+		return fs.Other(ctx, model.FsOtherArgs{
+			Path: reqPath,
+			Method: args.Method,
+			Data: args.Data,
+		})
 	}
 	if errs.IsNotImplement(err) {
 		return errors.New("same-name files cannot be Rename"), nil
