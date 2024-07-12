@@ -137,4 +137,19 @@ func (d *Alias) Remove(ctx context.Context, obj model.Obj) error {
 	return err
 }
 
+func (d *Alias) Other(ctx context.Context, args model.OtherArgs) (interface{}, error) {
+	root, sub := d.getRootAndPath(args.Obj.GetPath())
+	dsts, ok := d.pathMap[root]
+	if !ok {
+		return nil, errs.ObjectNotFound
+	}
+	for _, dst := range dsts {
+		link, err := d.link(ctx, dst, sub, args)
+		if err == nil {
+			return link, nil
+		}
+	}
+	return nil, errs.ObjectNotFound
+}
+
 var _ driver.Driver = (*Alias)(nil)
