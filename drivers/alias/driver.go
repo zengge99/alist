@@ -141,7 +141,7 @@ func (d *Alias) Other(ctx context.Context, args model.OtherArgs) (interface{}, e
 	reqPath, err := d.getReqPath(ctx, args.Obj)
 	if err == nil {
 		return fs.Other(ctx, model.FsOtherArgs{
-			Path: reqPath,
+			Path: *reqPath,
 			Method: args.Method,
 			Data: args.Data,
 		})
