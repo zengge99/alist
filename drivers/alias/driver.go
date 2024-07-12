@@ -146,9 +146,6 @@ func (d *Alias) Other(ctx context.Context, args model.OtherArgs) (interface{}, e
 			Data: args.Data,
 		})
 	}
-	if errs.IsNotImplement(err) {
-		return errors.New("same-name files cannot be Rename"), nil
-	}
 	return err, nil
 }
 
