@@ -140,10 +140,26 @@ func (d *Alias) Remove(ctx context.Context, obj model.Obj) error {
 func (d *Alias) Other(ctx context.Context, args model.OtherArgs) (interface{}, error) {
 	root, sub := d.getRootAndPath(args.Obj.GetPath())
 	dsts, ok := d.pathMap[root]
+
+	link, _, err := fs.Link(ctx, reqPath, args)
+	return link, err
+	
 	if !ok {
 		return nil, errs.ObjectNotFound
 	}
 	for _, dst := range dsts {
+		reqPath := stdpath.Join(dst, sub)
+		storage, err := fs.GetStorage(reqPath, &fs.GetStoragesArgs{})
+		if err != nil {
+			return nil, err
+		}
+		if err != nil {
+			return nil, err
+		}
+		_, err = fs.Get(ctx, reqPath, &fs.GetArgs{NoLog: true})
+		if err != nil {
+			return nil, err
+		}
 		link, err := d.link(ctx, dst, sub, args)
 		if err == nil {
 			return link, nil
