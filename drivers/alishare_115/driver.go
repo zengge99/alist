@@ -264,9 +264,9 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		URL: DownloadUrl,
 	}
 
-	//甲骨文等海外环境，115 API可能临时被block导致超时，3秒未响应则强制返回阿里直链
+	//甲骨文等海外环境，115 API可能临时被block导致超时，5秒未响应则强制返回阿里直链
 	fullHash := "123"
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second) 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) 
     defer cancel() 
     done := make(chan struct{})
     go func() {
