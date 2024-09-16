@@ -38,7 +38,8 @@ import (
     "os"
 )
 
-var UserAgent = driver115.UA115Desktop
+//var UserAgent = driver115.UA115Desktop
+var UserAgent = "Mozilla/5.0 115disk/30.1.0"
 
 const (
 	appVer = "2.0.3.6"
