@@ -274,7 +274,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		defer close(done)
 		if ok, err := d.client.UploadAvailable(); err != nil || !ok {
 			fmt.Println("[Debug] UploadAvailable failed")
-			return
+			//return
 		}
 		
         preHash := "2EF7BDE608CE5404E97D5F042F95F89F1C232871"
