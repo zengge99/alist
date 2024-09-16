@@ -273,7 +273,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
     go func() {
 		defer close(done)
 		if ok, err := d.client.UploadAvailable(); err != nil || !ok {
-			fmt.Println("[Debug] UploadAvailable failed")
+			fmt.Println("[Debug] UploadAvailable failed",err)
 			return
 		}
 		
@@ -282,7 +282,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 
 		var fastInfo *driver115.UploadInitResp
 		if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, link.URL); err != nil {
-			fmt.Println("[Debug] rapidUpload failed")
+			fmt.Println("[Debug] rapidUpload failed",err)
 			return
 		}
 
