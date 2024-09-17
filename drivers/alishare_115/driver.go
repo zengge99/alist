@@ -612,8 +612,8 @@ func (d *AliyundriveShare2Pan115) rapidUpload(fileSize int64, fileName, dirID, p
 
 	signKey, signVal := "", ""
 	for retry := true; retry; {
-		t := driver115.Now()
-		//t := driver115.NowMilli()
+		//t := driver115.Now()
+		t := driver115.NowMilli()
 
 		if encodedToken, err = ecdhCipher.EncodeToken(t.ToInt64()); err != nil {
 			return nil, err
