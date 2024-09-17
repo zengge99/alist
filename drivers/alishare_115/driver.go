@@ -34,7 +34,9 @@ import (
 	//"golang.org/x/time/rate"
 
 	"crypto/sha1"
+	"crypto/md5"
 	"bufio"
+	"encoding/hex"
     "os"
 )
 
@@ -71,6 +73,13 @@ type AliyundriveShare2Pan115 struct {
 	client  *driver115.Pan115Client
 	pan115LoginStatus	bool
 	pickCodeMap map[string]string
+}
+
+func (d *AliyundriveShare2Pan115) Generate115Token(fileID, preID, timeStamp, fileSize, signKey, signVal string) string {
+	userID := strconv.FormatInt(d.client.UserID, 10)
+	userIDMd5 := md5.Sum([]byte(userID))
+	tokenMd5 := md5.Sum([]byte(md5Salt + fileID + fileSize + signKey + signVal + userID + timeStamp + hex.EncodeToString(userIDMd5[:]) + appVer))
+	return hex.EncodeToString(tokenMd5[:])
 }
 
 func (d *AliyundriveShare2Pan115) Config() driver.Config {
