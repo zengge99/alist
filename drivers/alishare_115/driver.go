@@ -75,6 +75,7 @@ type AliyundriveShare2Pan115 struct {
 	pickCodeMap map[string]string
 }
 
+const md5Salt = "Qclm8MGWUv59TnrR0XPg"
 func (d *AliyundriveShare2Pan115) Generate115Token(fileID, preID, timeStamp, fileSize, signKey, signVal string) string {
 	userID := strconv.FormatInt(d.client.UserID, 10)
 	userIDMd5 := md5.Sum([]byte(userID))
