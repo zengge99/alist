@@ -39,12 +39,12 @@ import (
 )
 
 //var UserAgent = driver115.UA115Desktop
-//var UserAgent = "Mozilla/5.0 115disk/30.5.1"
-var UserAgent = "Mozilla/5.0 115Browser/27.0.3.7"
+var UserAgent = "Mozilla/5.0 115disk/30.5.1"
+//var UserAgent = "Mozilla/5.0 115Browser/27.0.3.7"
 
 const (
-	//appVer = "2.0.3.6"
-	appVer = "27.0.3.7"
+	//appVer = "30.5.1"
+	//appVer = "27.0.3.7"
 )
 
 type AliyundriveShare2Pan115 struct {
