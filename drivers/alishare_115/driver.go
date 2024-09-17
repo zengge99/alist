@@ -633,7 +633,8 @@ func (d *AliyundriveShare2Pan115) rapidUpload(fileSize int64, fileName, dirID, p
 		}
 
 		form.Set("t", t.String())
-		form.Set("token", d.client.GenerateToken(fileID, preID, t.String(), fileSizeStr, signKey, signVal))
+		//form.Set("token", d.client.GenerateToken(fileID, preID, t.String(), fileSizeStr, signKey, signVal))
+		form.Set("token", d.Generate115Token(fileID, preID, t.String(), fileSizeStr, signKey, signVal))
 		if signKey != "" && signVal != "" {
 			form.Set("sign_key", signKey)
 			form.Set("sign_val", signVal)
