@@ -39,7 +39,7 @@ import (
 )
 
 //var UserAgent = driver115.UA115Desktop
-var UserAgent = "Mozilla/5.0 115disk/30.1.0"
+var UserAgent = "Mozilla/5.0 115disk/30.5.1"
 
 const (
 	appVer = "2.0.3.6"
