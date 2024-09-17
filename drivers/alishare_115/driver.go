@@ -40,7 +40,7 @@ import (
 
 //var UserAgent = driver115.UA115Desktop
 //var UserAgent = "Mozilla/5.0 115disk/30.5.1"
-var UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0"
+var UserAgent = "Mozilla/5.0 115Browser/27.0.3.7"
 
 const (
 	appVer = "2.0.3.6"
