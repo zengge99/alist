@@ -43,7 +43,7 @@ var UserAgent = "Mozilla/5.0 115disk/30.5.1"
 //var UserAgent = "Mozilla/5.0 115Browser/27.0.3.7"
 
 const (
-	//appVer = "30.5.1"
+	appVer = "30.5.1"
 	//appVer = "27.0.3.7"
 )
 
