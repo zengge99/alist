@@ -39,12 +39,12 @@ import (
 )
 
 //var UserAgent = driver115.UA115Desktop
-var UserAgent = "Mozilla/5.0 115disk/30.5.1"
-//var UserAgent = "Mozilla/5.0 115Browser/27.0.3.7"
+//var UserAgent = "Mozilla/5.0 115disk/30.5.1"
+var UserAgent = "Mozilla/5.0 115Browser/27.0.3.7"
 
 const (
-	appVer = "30.5.1"
-	//appVer = "27.0.3.7"
+	//appVer = "30.5.1"
+	appVer = "27.0.3.7"
 )
 
 type AliyundriveShare2Pan115 struct {
@@ -612,8 +612,8 @@ func (d *AliyundriveShare2Pan115) rapidUpload(fileSize int64, fileName, dirID, p
 
 	signKey, signVal := "", ""
 	for retry := true; retry; {
-		t := driver115.Now()
-		//t := driver115.NowMilli()
+		//t := driver115.Now()
+		t := driver115.NowMilli()
 
 		if encodedToken, err = ecdhCipher.EncodeToken(t.ToInt64()); err != nil {
 			return nil, err
