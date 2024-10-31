@@ -296,6 +296,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 		var fastInfo *driver115.UploadInitResp
 		if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, link.URL); err != nil {
 			fmt.Println("[Debug] rapidUpload failed",err)
+			time.Sleep(2000 * time.Millisecond)
 			return
 		}
 
