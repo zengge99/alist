@@ -289,14 +289,14 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 			return
 		}
 		
-        	//preHash := "2EF7BDE608CE5404E97D5F042F95F89F1C232871"
-		preHash, _ := calculateSHA1Range(link.URL, 0, 1023)
+        	preHash := "2EF7BDE608CE5404E97D5F042F95F89F1C232871"
+		//preHash, _ := calculateSHA1Range(link.URL, 0, 1023)
 	    	fullHash = ContentHash
 
 		var fastInfo *driver115.UploadInitResp
 		if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, link.URL); err != nil {
 			fmt.Println("[Debug] rapidUpload failed",err)
-			time.Sleep(2000 * time.Millisecond)
+			//time.Sleep(2000 * time.Millisecond)
 			return
 		}
 
