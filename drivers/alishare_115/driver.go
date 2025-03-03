@@ -320,7 +320,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 			return
 		}
 
-	    	var file *FileObj
+	    	file := &FileObj{}
 		if matched, err := fastInfo.Ok(); err != nil {
 			fmt.Println("[Debug] rapidUpload failed(response)",err)
 			return
