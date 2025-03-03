@@ -320,6 +320,7 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 			return
 		}
 
+	    	/*
 	    	file := &FileObj{}
 		if matched, err := fastInfo.Ok(); err != nil {
 			fmt.Println("[Debug] rapidUpload failed(response)",err)
@@ -333,7 +334,8 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 			file = f
 			return
 		}
-
+		*/
+	    
 		success := false
 		for i := 0; i < 5; i++ {
 			var userAgent = args.Header.Get("User-Agent")
