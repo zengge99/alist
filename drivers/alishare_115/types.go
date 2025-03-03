@@ -60,3 +60,17 @@ type OpenResp struct {
 	DriverID string `json:"drive_id"`
 	FileID   string `json:"file_id"`
 }
+
+var _ model.Obj = (*FileObj)(nil)
+
+type FileObj struct {
+	driver.File
+}
+
+func (f *FileObj) CreateTime() time.Time {
+	return f.File.CreateTime
+}
+
+func (f *FileObj) GetHash() utils.HashInfo {
+	return utils.NewHashInfo(utils.SHA1, f.Sha1)
+}
