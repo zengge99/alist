@@ -227,26 +227,6 @@ func calculateSHA1Range(url string, start int64, end int64) (string, error) {
     return sha1HashUpper, nil
 }
 
-func (d *AliyundriveShare2Pan115) getNewFileByPickCode(pickCode string) (*FileObj, error) {
-	result := driver115.GetFileInfoResponse{}
-	req := d.client.NewRequest().
-		SetQueryParam("pick_code", pickCode).
-		ForceContentType("application/json;charset=UTF-8").
-		SetResult(&result)
-	resp, err := req.Get(driver115.ApiFileInfo)
-	if err := driver115.CheckErr(err, &result, resp); err != nil {
-		return nil, err
-	}
-	if len(result.Files) == 0 {
-		return nil, errors.New("not get file info")
-	}
-	fileInfo := result.Files[0]
-
-	f := &FileObj{}
-	f.From(fileInfo)
-	return f, nil
-}
-
 func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
 	file_id :=  file.GetID()
 	file_name := file.GetName()
@@ -315,27 +295,11 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 
 		var fastInfo *driver115.UploadInitResp
 		if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, link.URL); err != nil {
-			fmt.Println("[Debug] rapidUpload failed(internal)",err)
+			fmt.Println("[Debug] rapidUpload failed",err)
 			//time.Sleep(2000 * time.Millisecond)
 			return
 		}
 
-	    	/*
-	    	file := &FileObj{}
-		if matched, err := fastInfo.Ok(); err != nil {
-			fmt.Println("[Debug] rapidUpload failed(response)",err)
-			return
-		} else if matched {
-			f, err := d.getNewFileByPickCode(fastInfo.PickCode)
-			if err != nil {
-				fmt.Println("[Debug] getNewFileByPickCode failed",err)
-				return
-			}
-			file = f
-			return
-		}
-		*/
-	    
 		success := false
 		for i := 0; i < 5; i++ {
 			var userAgent = args.Header.Get("User-Agent")
