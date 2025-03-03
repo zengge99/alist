@@ -294,7 +294,10 @@ func (d *AliyundriveShare2Pan115) Link(ctx context.Context, file model.Obj, args
 	    	fullHash = ContentHash
 
 		var fastInfo *driver115.UploadInitResp
-		if fastInfo, err = d.rapidUpload(fileSize, file_name, d.DirId, preHash, fullHash, link.URL); err != nil {
+		now := time.Now()
+		timestamp := now.Format("20060102_150405")
+		newFilename := fmt.Sprintf("%s_%s", timestamp, filename)
+		if fastInfo, err = d.rapidUpload(fileSize, newFilename, d.DirId, preHash, fullHash, link.URL); err != nil {
 			fmt.Println("[Debug] rapidUpload failed",err)
 			//time.Sleep(2000 * time.Millisecond)
 			return
