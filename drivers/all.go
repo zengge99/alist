@@ -59,6 +59,7 @@ import (
 	_ "github.com/alist-org/alist/v3/drivers/yandex_disk"
 	_ "github.com/alist-org/alist/v3/drivers/alishare_115"
 	_ "github.com/alist-org/alist/v3/drivers/quark_share"
+	_ "github.com/alist-org/alist/v3/drivers/strm_list"
 )
 
 // All do nothing,just for import
