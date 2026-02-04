@@ -278,4 +278,5 @@ func init() {
 	})
 }
 
+
 var _ driver.Driver = (*StrmList)(nil)
