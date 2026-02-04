@@ -12,7 +12,7 @@ import (
 	"github.com/alist-org/alist/v3/internal/driver"
 	"github.com/alist-org/alist/v3/internal/model"
 	"github.com/alist-org/alist/v3/pkg/utils"
-	_ "modernc.org/sqlite" // AList 默认使用的纯 Go SQLite 驱动
+	_ "gorm.io/driver/sqlite" // AList 默认使用的纯 Go SQLite 驱动
 )
 
 type StrmList struct {
