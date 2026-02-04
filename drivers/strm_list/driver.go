@@ -1,9 +1,9 @@
 package strm_list
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -11,7 +11,6 @@ import (
 
 	"github.com/alist-org/alist/v3/internal/driver"
 	"github.com/alist-org/alist/v3/internal/model"
-	"github.com/alist-org/alist/v3/pkg/utils"
 	_ "gorm.io/driver/sqlite"
 )
 
@@ -25,6 +24,10 @@ func (d *StrmList) Config() driver.Config {
 	return config
 }
 
+func (d *StrmList) GetAddition() driver.Additional {
+	return &d.Addition
+}
+
 func (d *StrmList) Init(ctx context.Context) error {
 	// 确保数据库目录存在
 	dir := strings.ReplaceAll(d.DbPath, "strm.db", "")
@@ -32,14 +35,12 @@ func (d *StrmList) Init(ctx context.Context) error {
 		return err
 	}
 
-	// 初始化数据库连接 (使用纯 Go 版 SQLite，无需 CGO)
 	var err error
 	d.db, err = sql.Open("sqlite", d.DbPath+"?_pragma=journal_mode(OFF)&_pragma=synchronous(OFF)")
 	if err != nil {
 		return err
 	}
 
-	// 初始化表
 	_, err = d.db.Exec(`
 		CREATE TABLE IF NOT EXISTS nodes (
 			id INTEGER PRIMARY KEY,
@@ -54,7 +55,6 @@ func (d *StrmList) Init(ctx context.Context) error {
 		return err
 	}
 
-	// 检查是否为空，为空则触发百万级数据导入
 	var count int
 	_ = d.db.QueryRow("SELECT COUNT(*) FROM nodes").Scan(&count)
 	if count == 0 {
@@ -83,7 +83,6 @@ func (d *StrmList) List(ctx context.Context, dir model.Obj, args model.ListArgs)
 	}
 	defer rows.Close()
 
-	var t time.Time // strm 文件通常没有物理时间，返回空或当前时间
 	var files []model.Obj
 	for rows.Next() {
 		var name string
@@ -94,7 +93,7 @@ func (d *StrmList) List(ctx context.Context, dir model.Obj, args model.ListArgs)
 		files = append(files, &model.Object{
 			Name:     name,
 			Size:     int64(len(content)),
-			Modified: t,
+			Modified: time.Now(),
 			IsFolder: isDir,
 		})
 	}
@@ -127,9 +126,9 @@ func (d *StrmList) Link(ctx context.Context, file model.Obj, args model.LinkArgs
 		return nil, err
 	}
 	
-	// strm 文件 Link 返回的是其内部记录的 URL 内容
+	// AList V3 的 model.Link 不支持 String 字段，必须通过 MFile 返回数据流
 	return &model.Link{
-		String: content, // AList 会处理内容返回
+		MFile: model.NewNopMFile(bytes.NewReader([]byte(content))),
 		Header: http.Header{
 			"Content-Type": []string{"text/plain; charset=utf-8"},
 		},

@@ -1,17 +1,15 @@
 package strm_list
 
 import (
-	"database/sql"
+	"bufio"
 	"os"
 	"strings"
 
-	"github.com/alist-org/alist/v3/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
-// importTxt 高效导入百万级数据
 func (d *StrmList) importTxt() error {
-	log.Infof("[StrmList] 开始解析文本并构建索引: %s", d.TxtPath)
+	log.Infof("[StrmList] 开始解析文本: %s", d.TxtPath)
 	file, err := os.Open(d.TxtPath)
 	if err != nil {
 		return err
@@ -19,16 +17,20 @@ func (d *StrmList) importTxt() error {
 	defer file.Close()
 
 	tx, _ := d.db.Begin()
-	// 插入根节点 (ID=0)
 	_, _ = tx.Exec("INSERT OR IGNORE INTO nodes (id, name, parent_id, is_dir) VALUES (0, '', -1, 1)")
 
 	stmt, _ := tx.Prepare("INSERT INTO nodes (name, parent_id, is_dir, content) VALUES (?, ?, ?, ?)")
 	defer stmt.Close()
 
 	dirCache := map[string]int64{"": 0}
-	scanner := utils.GetScanner(file)
-	count := 0
+	
+	// 使用标准库 bufio 替代 AList utils 中不确定的 Scanner 函数
+	scanner := bufio.NewScanner(file)
+	// 如果一行内容非常长（比如超长URL），可以增加缓冲区
+	buf := make([]byte, 0, 64*1024)
+	scanner.Buffer(buf, 1024*1024)
 
+	count := 0
 	for scanner.Scan() {
 		line := scanner.Text()
 		parts := strings.SplitN(line, "#", 2)
@@ -40,7 +42,6 @@ func (d *StrmList) importTxt() error {
 		content := parts[1]
 		pathParts := strings.Split(fullPath, "/")
 
-		// 分层处理路径中的目录部分
 		var currParent int64 = 0
 		currPathAcc := ""
 		for _, part := range pathParts[:len(pathParts)-1] {
@@ -61,20 +62,22 @@ func (d *StrmList) importTxt() error {
 			}
 		}
 
-		// 插入文件节点
 		_, _ = stmt.Exec(pathParts[len(pathParts)-1], currParent, 0, content)
 		count++
 		if count%100000 == 0 {
-			log.Infof("[StrmList] 已导入 %d 条记录...", count)
+			log.Infof("[StrmList] 已解析并存入数据库 %d 条...", count)
 		}
 	}
 
+	if err := scanner.Err(); err != nil {
+		log.Errorf("[StrmList] 扫描文本失败: %v", err)
+	}
+
 	err = tx.Commit()
-	log.Infof("[StrmList] 导入完成，总计 %d 条", count)
+	log.Infof("[StrmList] 导入完成，总计有效记录: %d 条", count)
 	return err
 }
 
-// findNodeByPath 核心查询逻辑：通过路径逐级在数据库查找
 func (d *StrmList) findNodeByPath(path string) (id int64, isDir bool, content string, err error) {
 	path = strings.Trim(path, "/")
 	if path == "" || path == "." {
